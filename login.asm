@@ -6,6 +6,7 @@ PRINT macro msg
     lea dx,msg
     int 21h
     endm
+newline db 10,13,"$"
 false_login db 0
 countLetter dw 0
 success_loginMsg db 10,13,"You have successful login!$"
@@ -15,6 +16,14 @@ pw_Msg db 10,13,"Password : $"
 id db "sportxpert$"
 pw db "password$"
 
+logo db 10,13,"               _____                  _  __   __                _ "  
+     db 10,13,"              / ____|                | | \ \ / /               | |"  
+     db 10,13,"             | (___  _ __   ___  _ __| |_ \ V / _ __   ___ _ __| |_"
+     db 10,13,"              \___ \| '_ \ / _ \| '__| __| > < | '_ \ / _ \ '__| __|"
+     db 10,13,"              ____) | |_) | (_) | |  | |_ / . \| |_) |  __/ |  | |_ "
+     db 10,13,"             |_____/| .__/ \___/|_|   \__/_/ \_\ .__/ \___|_|   \__|"
+     db 10,13,"                    | |                        | |"                  
+     db 10,13,"                    |_|                        |_|",10,13,'$'                 
 
 idArr LABEL BYTE 
 MAX DB 30 
@@ -31,6 +40,7 @@ main proc
 mov ax,@data
 mov ds,ax
 
+print logo
 call login
 
 
@@ -39,141 +49,115 @@ int 21h
 main endp
 
 login proc
-username:
-call cls
-mov countLetter,0
-mov false_login,0
+    username:
+    mov countLetter,0
+    mov false_login,0
 
-PRINT userId_Msg
+    PRINT userId_Msg
 
-lea dx,idArr
-mov ah,0ah
-int 21h
+    lea dx,idArr
+    mov ah,0ah
+    int 21h
 
-mov si,0
-mov cx,1
-p1:
-mov bl,[input_idArr+si]
-cmp bl,13
-je idclear
-inc countLetter
-inc si
-inc cx
-loop p1
+    mov si,0
+    mov cx,1
+    p1:
+    mov bl,[input_idArr+si]
+    cmp bl,13
+    je idclear
+    inc countLetter
+    inc si
+    inc cx
+    loop p1
 
-idclear:
-call clear
-mov si,0
-jmp validation_id
+    idclear:
+    call clear
+    mov si,0
+    jmp validation_id
 
-invalid_id:
-inc false_login
-jmp pass
+    invalid_id:
+    inc false_login
+    jmp pass
 
-validation_id:
-mov cx,countLetter
-mov bl,[input_idArr+si]
-cmp [id+si],bl
-jne invalid_id
-inc si
-dec countLetter
-loop validation_id
+    validation_id:
+    mov cx,countLetter
+    mov bl,[input_idArr+si]
+    cmp [id+si],bl
+    jne invalid_id
+    inc si
+    dec countLetter
+    loop validation_id
 
-cmp [id+si],"$"
-jne invalid_id
+    cmp [id+si],"$"
+    jne invalid_id
 
-pass:
-PRINT pw_Msg
+    pass:
+    PRINT pw_Msg
 
-lea dx,pwArr
-mov ah,0ah
-int 21h
+    lea dx,pwArr
+    mov ah,0ah
+    int 21h
 
-mov countLetter,0
-mov si,0
-mov cx,1
-p2:
-mov bl,[input_pwArr+si]
-cmp bl,13
-je pwclear
-inc countLetter
-inc si
-inc cx
-loop p2
+    mov countLetter,0
+    mov si,0
+    mov cx,1
+    p2:
+    mov bl,[input_pwArr+si]
+    cmp bl,13
+    je pwclear
+    inc countLetter
+    inc si
+    inc cx
+    loop p2
 
-pwclear:
-call clear
-mov si,0
-jmp validation_pw
+    pwclear:
+    call clear
+    mov si,0
+    jmp validation_pw
 
-invalid_pw:
-inc false_login
-jmp checklogin
+    invalid_pw:
+    inc false_login
+    jmp checklogin
 
-unssucessful:
-PRINT invalid_ID_password_Msg
-call pause
-call CLS
-jmp username
+    unssucessful:
+    PRINT invalid_ID_password_Msg
+    call pause
+    call CLS
+    jmp username
 
-validation_pw:
-mov cx,countLetter
-mov bl,[input_pwArr+si]
-cmp [pw+si],bl
-jne invalid_pw
-inc si
-dec countLetter
-loop validation_pw
-cmp [pw+si],"$"
-jne invalid_pw
+    validation_pw:
+    mov cx,countLetter
+    mov bl,[input_pwArr+si]
+    cmp [pw+si],bl
+    jne invalid_pw
+    inc si
+    dec countLetter
+    loop validation_pw
+    cmp [pw+si],"$"
+    jne invalid_pw
 
-checklogin:
-cmp false_login,0
-jg unssucessful
+    checklogin:
+    cmp false_login,0
+    jg unssucessful
 
-successful:
-PRINT success_loginMsg
+    successful:
+    PRINT success_loginMsg
 
 login endp
-
 clear PROC          ;clear FUNCTION
-xor ax,ax
-xor bx,bx
-xor cx,cx
-xor dx,dx
-ret
+    xor ax,ax
+    xor bx,bx
+    xor cx,cx
+    xor dx,dx
+    ret
 clear endp
-newline proc        ;newline FUNCTION
-mov ah, 02h
-mov dl, 10
-int 21h	
-mov ah, 02h	
-mov dl, 13
-int 21h  
-ret
-newline endp
 CLS proc            ;clear screen FUNCTION
     mov ah, 00 
     mov al, 02
     int 10h
     ret 
 CLS endp
-
-
-acceptChar PROC     ;acceptChar FUNCTION
-mov ah,01h
-int 21h
-sub al,30h
-ret
-acceptChar endp 
-
-printChar PROC      ;printChar FUNCTION
-mov ah,02h
-add dl,30h
-int 21h
-ret
-printChar endp
-pause proc
+pause proc          ;pause FUNCTION
     push    cx
     push    ax
     push    dx
