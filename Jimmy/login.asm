@@ -9,10 +9,12 @@ PRINT macro msg
 newline db 10,13,"$"
 false_login db 0
 countLetter dw 0
+logoutMsg db 10,13,"          You have successfully logged out."
+          db 10,13,"            Thank you for using the system!",'$'
 success_loginMsg db 10,13,"You have successful login!$"
 invalid_ID_password_Msg db 10,13,"You have entered invalid user id or password.",10,13,"Press any key to continue...$"
-userId_Msg db 10,13,"User ID : $"
-pw_Msg db 10,13,"Password : $"
+userId_Msg db 10,13,"Username (x = exit): $"
+pw_Msg db 10,13,"Password (x = exit): $"
 id db "sportxpert$"
 pw db "password$"
 
@@ -44,6 +46,8 @@ call cls
 call login
 
 
+logout:
+print logoutMsg
 mov ah,4ch
 int 21h
 main endp
@@ -62,6 +66,9 @@ login proc
 
     mov si,0
     mov cx,1
+    mov bl,[input_idArr+si]
+    cmp bl,'x'                  ; jump to End Program IF "x"
+    je logout
     p1:
     mov bl,[input_idArr+si]
     cmp bl,13
@@ -102,6 +109,9 @@ login proc
     mov countLetter,0
     mov si,0
     mov cx,1
+     mov bl,[input_pwArr+si]
+    cmp bl,'x'                  ; jump to End Program IF "x"
+    je logout
     p2:
     mov bl,[input_pwArr+si]
     cmp bl,13
