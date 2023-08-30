@@ -28,19 +28,19 @@ logo db 10,13,"               _____                  _  __   __                _
 idArr LABEL BYTE 
 MAX DB 30 
 ACT DB ? 
-input_idArr DB 30 DUP ('?') 
+input_idArr DB 30 DUP ('$') 
 
 pwArr LABEL BYTE 
 MAX_pwArr DB 30 
 ACT_pwArr DB ? 
-input_pwArr DB 30 DUP ('?')
+input_pwArr DB 30 DUP ('$')
  
 .code
 main proc
 mov ax,@data
 mov ds,ax
 
-print logo
+call cls
 call login
 
 
@@ -50,6 +50,7 @@ main endp
 
 login proc
     username:
+    print logo
     mov countLetter,0
     mov false_login,0
 
