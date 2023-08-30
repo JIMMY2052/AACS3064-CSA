@@ -14,7 +14,7 @@ logoutMsg db 10,13,"          You have successfully logged out."
 success_loginMsg db 10,13,"You have successful login!$"
 invalid_ID_password_Msg db 10,13,"You have entered invalid user id or password.",10,13,"Press any key to continue...$"
 userId_Msg db 10,13,"Username (x = exit): $"
-pw_Msg db 10,13,"Password (x = exit): $"
+pw_Msg db 10,13,"Password: $"
 id db "sportxpert$"
 pw db "password$"
 
@@ -45,9 +45,6 @@ mov ds,ax
 call cls
 call login
 
-
-logout:
-print logoutMsg
 mov ah,4ch
 int 21h
 main endp
@@ -64,11 +61,12 @@ login proc
     mov ah,0ah
     int 21h
 
+    
     mov si,0
     mov cx,1
     mov bl,[input_idArr+si]
     cmp bl,'x'                  ; jump to End Program IF "x"
-    je logout
+    je logout1
     p1:
     mov bl,[input_idArr+si]
     cmp bl,13
@@ -77,6 +75,11 @@ login proc
     inc si
     inc cx
     loop p1
+
+    logout1:
+    print logoutMsg
+    mov ah,4ch
+    int 21h
 
     idclear:
     call clear
@@ -95,7 +98,6 @@ login proc
     inc si
     dec countLetter
     loop validation_id
-
     cmp [id+si],"$"
     jne invalid_id
 
@@ -109,9 +111,9 @@ login proc
     mov countLetter,0
     mov si,0
     mov cx,1
-     mov bl,[input_pwArr+si]
+    mov bl,[input_pwArr+si]
     cmp bl,'x'                  ; jump to End Program IF "x"
-    je logout
+    je logout2
     p2:
     mov bl,[input_pwArr+si]
     cmp bl,13
@@ -154,6 +156,11 @@ login proc
     successful:
     PRINT success_loginMsg
 
+    logout2:
+    print logoutMsg
+    mov ah,4ch
+    int 21h
+    ret
 login endp
 clear PROC          ;clear FUNCTION
     xor ax,ax
