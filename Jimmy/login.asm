@@ -9,12 +9,12 @@ PRINT macro msg
 newline db 10,13,"$"
 false_login db 0
 countLetter dw 0
-logoutMsg db 10,13,"          You have successfully logged out."
-          db 10,13,"            Thank you for using the system!",'$'
+logoutMsg db 10,13,10,13,10,13,"                    You have successfully logged out."
+          db 10,13,"                    Thank you for using the system!",'$'
 success_loginMsg db 10,13,"You have successful login!$"
 invalid_ID_password_Msg db 10,13,"You have entered invalid user id or password.",10,13,"Press any key to continue...$"
 userId_Msg db 10,13,"Username (x = exit): $"
-pw_Msg db 10,13,"Password: $"
+pw_Msg db 10,13,"Password (x =  exit): $"
 id db "sportxpert$"
 pw db "password$"
 
