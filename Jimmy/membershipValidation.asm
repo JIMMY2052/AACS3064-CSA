@@ -86,8 +86,8 @@ print BronzeMsg
  print GoldMsg
  jmp endingMembership
 checkMembership:        ; check member id whether it is valid
-call ReadMembershipF
-call validateMemberF
+call ReadMembershipF        ;Read Input of membership   
+call validateMemberF        ; Validate Membership Function
 mov al,correctMemberId
 cmp al,1
 je correctMemberIdLabel
@@ -97,7 +97,7 @@ call pause
 call cls
 jmp MembershipProceedLabel
 
-correctMemberIdLabel:
+correctMemberIdLabel:       ;IF correct Member Id , assign corresponding letter to a variable and print out the membership level + discount rate
 mov si,0
 mov al,[input_member_Arr + si]
 cmp al,'B'

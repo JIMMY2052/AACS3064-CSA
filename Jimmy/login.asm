@@ -6,6 +6,7 @@ PRINT macro msg
     lea dx,msg
     int 21h
     endm
+pressAnytoContinue db 10,13,"Press any key to continue...$"
 newline db 10,13,"$"
 false_login db 0
 countLetter dw 0
@@ -138,6 +139,10 @@ login proc
     call CLS
     jmp username
 
+    logout2:
+    print logoutMsg
+    mov ah,4ch
+    int 21h
     validation_pw:
     mov cx,countLetter
     mov bl,[input_pwArr+si]
@@ -155,11 +160,9 @@ login proc
 
     successful:
     PRINT success_loginMsg
-
-    logout2:
-    print logoutMsg
-    mov ah,4ch
-    int 21h
+    print pressAnytoContinue
+    call pause
+   
     ret
 login endp
 clear PROC          ;clear FUNCTION
