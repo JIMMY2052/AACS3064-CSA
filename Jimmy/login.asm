@@ -163,7 +163,7 @@ login proc
     print pressAnytoContinue
     call pause
    
-    ret
+    ret 
 login endp
 clear PROC          ;clear FUNCTION
     xor ax,ax

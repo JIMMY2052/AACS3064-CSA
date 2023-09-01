@@ -8,7 +8,11 @@ print macro msg
 endm
 invalidMemberIdMsg db 10,13,"Invalid Member ID. Hint: Please ensure the first letter is CAPITAL LETTER.$"
 memberProceedMsg db 10,13,"Do you want check membership (y) or back to asking membership (n) >$"
-memberid_Arr db "B01,B02,S01,S03,S05,G02,G03,$"
+
+
+
+memberid_Arr db "B01,B02,S01,S03,S05,G02,G03,G04,B03,$"
+memberid_Arr2 db 30 dup ('$')
 newline db 10,13,"$"
 hasMembershipMsg db 10,13,"Do customer has a membership (y OR n): $"
 invalidCharMsg db 10,13,"Please enter a valid character (y OR n).",'$'
@@ -19,6 +23,8 @@ MembershipLevel db ?
 BronzeMsg db 10,13,"This customer is Bronze Membership.  Customer can enjoy 5% discount.$"
 SilverMsg db 10,13,"This customer is Silver Membership.  Customer can enjoy 10% discount.$"
 GoldMsg db 10,13,"This customer is Gold Membership.  Customer can enjoy 15% discount.$"
+totalWholeNum dw 2291
+ 
 
 member_Arr LABEL BYTE 
 MAXmember_Arr DB 5
@@ -29,6 +35,17 @@ input_member_Arr DB 5 DUP ('$')
 main proc
 mov ax,@data
 mov ds,ax
+
+
+
+call hasMembership
+grandTotalLabel:
+call grandTotalF
+
+mov ah,4ch
+int 21h
+main endp
+hasMembership proc
 ;---------------------------------------------------------------------------------------------------
 paymentLabel:           ;asking has Membership?
 call cls
@@ -50,8 +67,6 @@ call pause
 call cls
 jmp paymentLabel
 
-grandTotalLabel:
-call grandTotalF
 ;--------------------------------------------------------------------------------------------------
 
 MembershipProceedLabel:         ; check whether want to proceed or back to previous step
@@ -74,17 +89,17 @@ jmp MembershipProceedLabel
 
 ;--------------------------------------------------------------------------------------------------
 Bronze:
- mov MembershipLevel,'B'
+ mov MembershipLevel,5
 print BronzeMsg
- jmp endingMembership
+ jmp endinghasMembership
  Silver:
- mov MembershipLevel,'S'
+ mov MembershipLevel,10
  print SilverMsg
- jmp endingMembership 
+ jmp endinghasMembership
  Gold:
- mov MembershipLevel,'G'
+ mov MembershipLevel,15
  print GoldMsg
- jmp endingMembership
+ jmp endinghasMembership
 checkMembership:        ; check member id whether it is valid
 call ReadMembershipF        ;Read Input of membership   
 call validateMemberF        ; Validate Membership Function
@@ -107,12 +122,9 @@ je Silver
 cmp al,'G'
 je Gold
 
-endingMembership:
-
-mov ah,4ch
-int 21h
-
-main endp
+endinghasMembership:
+ret
+hasMembership endp
 ReadMembershipF proc
     print ReadMemberIDMsg
     lea dx,member_Arr
@@ -121,14 +133,48 @@ ReadMembershipF proc
     ret
 ReadMembershipF endp
 validateMemberF proc
+;---------sorting array into new array for validation------------------
+mov di,0
+mov si,0
+mov cx,1
+sorting1:
+mov al,[memberid_Arr + si]
+cmp al,'$'
+je endforsorting
+cmp al,[input_member_Arr]
+je sorting
+inc si
+inc cx
+loop sorting1
+
+sorting:
+mov [memberid_Arr2 + di], al
+inc si
+inc di
+mov al,[memberid_Arr + si]
+mov [memberid_Arr2 + di], al
+inc si
+inc di
+mov al,[memberid_Arr + si]
+mov [memberid_Arr2 + di], al
+inc si
+inc di
+mov al,[memberid_Arr + si]
+mov [memberid_Arr2 + di], al
+inc si
+inc di
+jmp sorting1
+;---------sorting array into new array for validation------------------
+endforsorting:
     mov si,0
     mov di,0
    
     mov al,[input_member_Arr + si]
+    
 
     mov cx,1
     ValidateFirstCharMemberId:              ;First char validation
-    mov dl,[memberid_Arr + di]
+    mov dl,[memberid_Arr2 + di]
     cmp dl,'$'
     je incorrectCharMemberId
     cmp al,dl
@@ -146,7 +192,7 @@ validateMemberF proc
 
     mov cx,1
     ValidateSecondCharMemberId:              ;Second char validation
-    mov dl,[memberid_Arr + di]
+    mov dl,[memberid_Arr2 + di]
     cmp dl,'$'
     je incorrectCharMemberId
     cmp al,dl
@@ -164,7 +210,7 @@ validateMemberF proc
 
     mov cx,1
     ValidateThirdCharMemberId:              ;Third char validation
-    mov dl,[memberid_Arr + di]
+    mov dl,[memberid_Arr2 + di]
     cmp dl,'$'
     je incorrectCharMemberId
     cmp al,dl

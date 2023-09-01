@@ -17,7 +17,7 @@ userId_Msg db 10,13,"Username (x = exit): $"
 pw_Msg db 10,13,"Password (x =  exit): $"
 id db "sportxpert$"
 pw db "password$"
-invalidMemberIdMsg db 10,13,"Invalid Member ID. Hint: Please ensure the first letter is CAPITAL LETTER.$"
+invalidMemberIdMsg db 10,13,"Invalid Member ID. $"
 memberProceedMsg db 10,13,"Do you want check membership (y) or back to asking membership (n) >$"
 memberid_Arr db "B01,B02,S01,S03,S05,G02,G03,$"
 hasMembershipMsg db 10,13,"Do customer has a membership (y OR n): $"
@@ -59,7 +59,7 @@ mov ds,ax
 
 call cls
 call login
-call payment
+call hasMembership
 
 mov ah,4ch
 int 21h
@@ -135,7 +135,7 @@ validateMemberF proc
     endingvalidateMemberF:
     ret
 validateMemberF endp
-payment proc
+hasMembership proc
 ;---------------------------------------------------------------------------------------------------
 paymentLabel:           ;asking has Membership?
 call cls
@@ -183,15 +183,15 @@ jmp MembershipProceedLabel
 Bronze:
  mov MembershipLevel,'B'
 print BronzeMsg
- jmp endingMembership
+ jmp endinghasMembership
  Silver:
  mov MembershipLevel,'S'
  print SilverMsg
- jmp endingMembership 
+ jmp endinghasMembership 
  Gold:
  mov MembershipLevel,'G'
  print GoldMsg
- jmp endingMembership
+ jmp endinghasMembership
 checkMembership:        ; check member id whether it is valid
 call ReadMembershipF     ;Read Input of membership       
 call validateMemberF      ; Validate Membership Function
@@ -215,9 +215,9 @@ je Silver
 cmp al,'G'
 je Gold
 
-endingMembership:
+endinghasMembership:
 ret
-payment endp
+hasMembership endp
 login proc
     username:
     print logo
