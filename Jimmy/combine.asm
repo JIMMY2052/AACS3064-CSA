@@ -17,9 +17,10 @@ userId_Msg db 10,13,"Username (x = exit): $"
 pw_Msg db 10,13,"Password (x =  exit): $"
 id db "sportxpert$"
 pw db "password$"
-invalidMemberIdMsg db 10,13,"Invalid Member ID. $"
-memberProceedMsg db 10,13,"Do you want check membership (y) or back to asking membership (n) >$"
-memberid_Arr db "B01,B02,S01,S03,S05,G02,G03,$"
+invalidMemberIdMsg db 10,13,"Invalid Member ID."
+memberProceedMsg db 10,13,"Do you want check membership (y) or back to asking membership (n) > $"
+memberid_Arr db "B01,B02,S01,S03,S05,G02,G03,G04,B03,$"
+memberid_Arr2 db 30 dup ('$')
 hasMembershipMsg db 10,13,"Do customer has a membership (y OR n): $"
 invalidCharMsg db 10,13,"Please enter a valid character (y OR n).",'$'
 pressAnytoContinue db 10,13,"Press any key to continue...$"
@@ -75,14 +76,48 @@ ReadMembershipF proc
     ret
 ReadMembershipF endp
 validateMemberF proc
+;---------sorting array into new array for validation------------------
+mov di,0
+mov si,0
+mov cx,1
+sorting1:
+mov al,[memberid_Arr + si]
+cmp al,'$'
+je endforsorting
+cmp al,[input_member_Arr]
+je sorting
+inc si
+inc cx
+loop sorting1
+
+sorting:
+mov [memberid_Arr2 + di], al
+inc si
+inc di
+mov al,[memberid_Arr + si]
+mov [memberid_Arr2 + di], al
+inc si
+inc di
+mov al,[memberid_Arr + si]
+mov [memberid_Arr2 + di], al
+inc si
+inc di
+mov al,[memberid_Arr + si]
+mov [memberid_Arr2 + di], al
+inc si
+inc di
+jmp sorting1
+;---------sorting array into new array for validation------------------
+endforsorting:
     mov si,0
     mov di,0
    
     mov al,[input_member_Arr + si]
+    
 
     mov cx,1
     ValidateFirstCharMemberId:              ;First char validation
-    mov dl,[memberid_Arr + di]
+    mov dl,[memberid_Arr2 + di]
     cmp dl,'$'
     je incorrectCharMemberId
     cmp al,dl
@@ -100,7 +135,7 @@ validateMemberF proc
 
     mov cx,1
     ValidateSecondCharMemberId:              ;Second char validation
-    mov dl,[memberid_Arr + di]
+    mov dl,[memberid_Arr2 + di]
     cmp dl,'$'
     je incorrectCharMemberId
     cmp al,dl
@@ -118,7 +153,7 @@ validateMemberF proc
 
     mov cx,1
     ValidateThirdCharMemberId:              ;Third char validation
-    mov dl,[memberid_Arr + di]
+    mov dl,[memberid_Arr2 + di]
     cmp dl,'$'
     je incorrectCharMemberId
     cmp al,dl
