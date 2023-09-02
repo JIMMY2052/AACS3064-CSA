@@ -14,7 +14,7 @@ logoutMsg db 10,13,10,13,10,13,"                    You have successfully logged
 success_loginMsg db 10,13,"You have successful login!$"
 invalid_ID_password_Msg db 10,13,"You have entered invalid user id or password.",10,13,"Press any key to continue...$"
 userId_Msg db 10,13,"Username (x = exit): $"
-pw_Msg db 10,13,"Password (x =  exit): $"
+pw_Msg db 10,13,"Password (x = exit): $"
 id db "sportxpert$"
 pw db "password$"
 invalidMemberIdMsg db 10,13,"Invalid Member ID."
@@ -26,10 +26,38 @@ invalidCharMsg db 10,13,"Please enter a valid character (y OR n).",'$'
 pressAnytoContinue db 10,13,"Press any key to continue...$"
 ReadMemberIDMsg db 10,13,10,13,"Enter Member ID : $"
 correctMemberId db 0
-MembershipLevel db ?
+RM db "RM$"
+gotMembership db ?
+MembershipRate dw ?
 BronzeMsg db 10,13,"This customer is Bronze Membership.  Customer can enjoy 5% discount.$"
 SilverMsg db 10,13,"This customer is Silver Membership.  Customer can enjoy 10% discount.$"
 GoldMsg db 10,13,"This customer is Gold Membership.  Customer can enjoy 15% discount.$"
+
+
+
+grandTotalMsg db "Grand Total             = RM $"
+SSTMsg db "(+) SST (10%)           = RM $"
+DiscountAmount db "(-) Membership Discount = RM $"
+NetTotalToPay db "NET TOTAL               =  RM $"
+EnterAmount db "Enter Amount = RM$"
+
+SST dw 10
+tempDiscounted dw 0
+grandTotal dw 1000
+grandTotalDecimal12 dw 5
+grandTotalDecimal34 dw 0
+
+NetTotal dw 0
+NetTotalDecimal12 dw 0
+NetTotalDecimal34 dw 0
+
+SSTGrandTotal dw 0
+SSTGrandTotalDecimal12 dw 0
+SSTGrandTotalDecimal34 dw 0
+
+grandTotalDiscounted dw 0
+Decimal12Discounted dw 0
+Decimal34Discounted dw 0
 
 member_Arr LABEL BYTE 
 MAXmember_Arr DB 5
@@ -42,8 +70,18 @@ logo db 10,13,"               _____                  _  __   __                _
      db 10,13,"              ____) | |_) | (_) | |  | |_ / . \| |_) |  __/ |  | |_ "
      db 10,13,"             |_____/| .__/ \___/|_|   \__/_/ \_\ .__/ \___|_|   \__|"
      db 10,13,"                    | |                        | |"                  
-     db 10,13,"                    |_|                        |_|",10,13,'$'                 
+     db 10,13,"                    |_|                        |_|",10,13,'$'   
 
+Paymentlogo db 10,13,"            _____                                 _   "
+            db 10,13,"           |  __ \                               | |  "
+            db 10,13,"           | |__) |_ _ _   _ _ __ ___   ___ _ __ | |_ "
+            db 10,13,"           |  ___/ _` | | | | '_ ` _ \ / _ \ '_ \| __|"
+            db 10,13,"           | |  | (_| | |_| | | | | | |  __/ | | | |_ "
+            db 10,13,"           |_|   \__,_|\__, |_| |_| |_|\___|_| |_|\__|"
+            db 10,13,"                        __/ |                         "
+            db 10,13,"                       |___/                          ",10,13,'$'              
+headline db 10,13,"=========================================================================$"
+processingPaymentMsg db "                   Payment Processing... $"
 idArr LABEL BYTE 
 MAX DB 30 
 ACT DB ? 
@@ -60,14 +98,400 @@ mov ds,ax
 
 call cls
 call login
-call hasMembership
+call paymentFUNCTION
+call cls
+print Paymentlogo
+print headline 
+print processingPaymentMsg
+print headline
+print newline
+print grandTotalMsg
+call printoutGrandTotalFUNCTION
+print newline
+print SSTMsg
+call printoutSSTFUNCTION
+print newline
+print DiscountAmount
+call printoutDiscountedTotalFUNCTION
+print newline
+print NetTotalToPay
+call printoutNetTotalFUNCTION
+
+
 
 mov ah,4ch
 int 21h
 main endp
-grandTotalF proc
+
+paymentFUNCTION proc
+call hasMembership
+mov al,gotMembership
+cmp al,'n'
+je SSTLabel
+call MemberDiscountFuntion
+jmp CalulateNetTotal
+SSTLabel:
+call cls
+call clear
+print Paymentlogo
+mov ax,grandTotal
+mov NetTotal,ax
+mov ax,grandTotalDecimal12
+mov NetTotalDecimal12,ax
+CalulateNetTotal:
+call SSTFUNCTION
+call NetTotalFUCTION
+
+ret
+paymentFUNCTION endp
+printoutSSTFUNCTION proc
+call clear
+mov ax,SSTGrandTotal
+call converter
+mov ah,02h
+mov dl,'.'
+int 21h
+mov ax,SSTGrandTotalDecimal12
+cmp ax,10
+jl printSSTGrandTotal12For0
+lp333:
+call clear
+mov ax,SSTGrandTotalDecimal12
+call converter
+mov ax,SSTGrandTotalDecimal34
+cmp ax,10
+jl printSSTGrandTotal34For0
+lp444:
+call clear
+mov ax,SSTGrandTotalDecimal34
+call converter
+jmp endPrintoutSSTGrandTotal
+printSSTGrandTotal34For0:
+mov ah,02h
+mov dl,'0'
+int 21h
+jmp lp444
+
+printSSTGrandTotal12For0:
+mov ah,02h
+mov dl,'0'
+int 21h
+jmp lp333
+endPrintoutSSTGrandTotal:
+ret
+printoutSSTFUNCTION endp
+printoutGrandTotalFUNCTION proc
+call clear
+mov ax,grandTotal
+call converter
+mov ah,02h
+mov dl,'.'
+int 21h
+mov ax,grandTotalDecimal12
+cmp ax,10
+jl printGrandTotal12For0
+lp33:
+call clear
+mov ax,grandTotalDecimal12
+call converter
+mov ax,grandTotalDecimal34
+cmp ax,10
+jl printGrandTotal34For0
+lp44:
+call clear
+mov ax,grandTotalDecimal34
+call converter
+jmp endPrintoutGrandTotal
+printGrandTotal34For0:
+mov ah,02h
+mov dl,'0'
+int 21h
+jmp lp44
+
+printGrandTotal12For0:
+mov ah,02h
+mov dl,'0'
+int 21h
+jmp lp33
+endPrintoutGrandTotal:
+ret
+printoutGrandTotalFUNCTION endp
+printoutNetTotalFUNCTION proc
+call clear
+mov ax,NetTotal
+call converter
+mov ah,02h
+mov dl,'.'
+int 21h
+mov ax,NetTotalDecimal12
+cmp ax,10
+jl printNetTotal12For0
+lp3:
+call clear
+mov ax,NetTotalDecimal12
+call converter
+mov ax,NetTotalDecimal34
+cmp ax,10
+jl printNetTotal34For0
+lp4:
+call clear
+mov ax,NetTotalDecimal34
+call converter
+jmp endPrintoutNetTotal
+printNetTotal34For0:
+mov ah,02h
+mov dl,'0'
+int 21h
+jmp lp4
+
+printNetTotal12For0:
+mov ah,02h
+mov dl,'0'
+int 21h
+jmp lp3
+endPrintoutNetTotal:
+ret
+printoutNetTotalFUNCTION endp
+printoutDiscountedTotalFUNCTION proc
+    call clear
+    mov ax,NetTotal
+    call converter
+    mov ah,02h
+    mov dl,'.'
+    int 21h
+    call clear
+    mov ax,NetTotalDecimal12
+    cmp ax,10
+    jl printing12For0
+    backPrinting12:
+    call clear
+    mov ax,NetTotalDecimal12
+    call converter
+    mov ax,NetTotalDecimal34
+    cmp ax,10
+    jl printing34For0
+    backPrinting34:
+    call clear
+    mov ax,NetTotalDecimal34
+    call converter
+    jmp endprintoutDiscount
+    printing34For0:
+    mov ah,02h
+    mov dl,'0'
+    int 21h
+    jmp backPrinting34
+    
+    printing12For0:
+    mov ah,02h
+    mov dl,'0'
+    int 21h
+    jmp backPrinting12
+    endprintoutDiscount:
     ret
-grandTotalF endp
+printoutDiscountedTotalFUNCTION endp
+NetTotalFUCTION proc
+mov ax, NetTotal
+add ax, SSTGrandTotal
+mov NetTotal, ax
+call clear
+mov ax, NetTotalDecimal34
+add ax, SSTGrandTotalDecimal34
+cmp ax,100
+jge carry34
+mov NetTotalDecimal34,ax
+call clear
+lp1:
+mov ax,NetTotalDecimal12
+add ax,SSTGrandTotalDecimal12
+cmp ax,100
+jge carry12
+mov NetTotalDecimal12,ax
+lp2:
+jmp endNetTotalFUNTION
+
+carry12:
+mov bx,100
+div bx
+mov NetTotalDecimal12,dx
+add NetTotal,ax
+jmp lp2
+
+carry34:
+mov bx,100
+div bx
+mov NetTotalDecimal34,dx
+add NetTotalDecimal12,ax
+jmp lp1
+endNetTotalFUNTION:
+ret
+NetTotalFUCTION endp
+MemberDiscountFuntion proc
+;----------------------------------------------------
+mov ax,grandTotal
+mov NetTotal,ax
+mov ax,grandTotalDecimal12
+mov NetTotalDecimal12,ax
+mov ax,NetTotal
+mov bx,MembershipRate
+mul bx
+mov tempDiscounted,ax
+call clear
+mov ax,tempDiscounted
+mov bx,100
+div bx
+mov grandTotalDiscounted,ax
+mov Decimal12Discounted,dx
+;----------------------------------------------------
+mov ax,NetTotalDecimal12
+mov NetTotalDecimal12,ax
+mov bx,MembershipRate
+mul bx
+mov tempDiscounted,ax
+call clear
+mov ax,tempDiscounted
+mov bx,100
+div bx
+add Decimal12Discounted,ax
+mov Decimal34Discounted,dx
+;----------------------------------------------------
+mov ax,NetTotal
+sub ax,grandTotalDiscounted
+mov NetTotal,ax
+mov bx,NetTotalDecimal34
+cmp bx,Decimal34Discounted
+jge NoBorrow34
+dec NetTotalDecimal12
+add NetTotalDecimal34,100
+mov bx,NetTotalDecimal34
+sub bx,Decimal34Discounted
+mov NetTotalDecimal34,bx
+
+subtract_the_decimal12:
+mov ax,NetTotalDecimal12
+cmp ax,Decimal12Discounted
+jge NoBorrow12
+dec NetTotal
+add NetTotalDecimal12,100
+mov ax,NetTotalDecimal12
+sub ax,Decimal12Discounted
+mov NetTotalDecimal12,ax
+
+NoBorrow12:
+sub ax,Decimal12Discounted
+mov NetTotalDecimal12,ax
+jmp done_subtract
+
+NoBorrow34:
+sub bx,Decimal34Discounted
+mov NetTotalDecimal34,bx
+jmp subtract_the_decimal12
+done_subtract:
+ret
+MemberDiscountFuntion endp
+SSTFUNCTION proc
+    call clear
+    mov ax,grandTotal
+    mov bx,SST
+    div bx
+    mov SSTGrandTotal, ax
+    mov ax,dx
+    mov bx,10
+    mul bx
+    mov SSTGrandTotalDecimal12,ax
+
+    mov ax,grandTotalDecimal12
+    mov bx,10
+    div bx
+    add SSTGrandTotalDecimal12,ax
+    mov SSTGrandTotalDecimal34,dx
+    mov ax,SSTGrandTotalDecimal34
+    mov bx,10
+    mul bx
+    mov SSTGrandTotalDecimal34,ax
+ret
+SSTFUNCTION endp
+hasMembership proc
+;---------------------------------------------------------------------------------------------------
+paymentLabel:           ;asking has Membership?
+call cls
+print hasMembershipMsg
+mov ah,01h
+int 21h
+
+cmp al,'y'
+je MembershipProceedLabel       
+cmp al,'Y'                      ;jump to ask do you want to proceed membership checking
+je MembershipProceedLabel
+cmp al,'N'
+je endinghasMembership
+cmp al,'n'                      ;No membership then directly go to grandtotal calculation
+je endinghasMembership
+print invalidCharMsg
+print pressAnytoContinue
+call pause
+call cls
+jmp paymentLabel
+endinghasMembership:
+mov gotMembership,al
+jmp exitMembership
+;--------------------------------------------------------------------------------------------------
+
+MembershipProceedLabel:         ; check whether want to proceed or back to previous step
+print memberProceedMsg
+mov ah,01h
+int 21h
+cmp al,'y'
+je checkMembership
+cmp al,'Y'
+je checkMembership
+cmp al,'N'
+je paymentLabel                   ; back to asking membership step
+cmp al,'n'
+je paymentLabel
+print invalidCharMsg
+print pressAnytoContinue
+call pause
+call cls
+jmp MembershipProceedLabel  
+
+;--------------------------------------------------------------------------------------------------
+Bronze:
+ mov MembershipRate,5
+print BronzeMsg
+ jmp exitMembership
+ Silver:
+ mov MembershipRate,10
+ print SilverMsg
+ jmp exitMembership
+ Gold:
+ mov MembershipRate,15
+ print GoldMsg
+ jmp exitMembership
+checkMembership:        ; check member id whether it is valid
+call ReadMembershipF        ;Read Input of membership   
+call validateMemberF        ; Validate Membership Function
+mov al,correctMemberId
+cmp al,1
+je correctMemberIdLabel
+print invalidMemberIdMsg
+print pressAnytoContinue
+call pause
+call cls
+jmp MembershipProceedLabel
+
+correctMemberIdLabel:       ;IF correct Member Id , assign corresponding letter to a variable and print out the membership level + discount rate
+mov si,0
+mov al,[input_member_Arr + si]
+cmp al,'B'
+je Bronze
+cmp al,'S'
+je Silver
+cmp al,'G'
+je Gold
+
+exitMembership:
+ret
+hasMembership endp
 ReadMembershipF proc
     print ReadMemberIDMsg
     lea dx,member_Arr
@@ -170,89 +594,6 @@ endforsorting:
     endingvalidateMemberF:
     ret
 validateMemberF endp
-hasMembership proc
-;---------------------------------------------------------------------------------------------------
-paymentLabel:           ;asking has Membership?
-call cls
-print hasMembershipMsg
-mov ah,01h
-int 21h
-
-cmp al,'y'
-je MembershipProceedLabel       
-cmp al,'Y'                      ;jump to ask do you want to proceed membership checking
-je MembershipProceedLabel
-cmp al,'N'
-je grandTotalLabel
-cmp al,'n'                      ;No membership then directly go to grandtotal calculation
-je grandTotalLabel
-print invalidCharMsg
-print pressAnytoContinue
-call pause
-call cls
-jmp paymentLabel
-
-grandTotalLabel:
-call grandTotalF
-;--------------------------------------------------------------------------------------------------
-
-MembershipProceedLabel:         ; check whether want to proceed or back to previous step
-print memberProceedMsg
-mov ah,01h
-int 21h
-cmp al,'y'
-je checkMembership
-cmp al,'Y'
-je checkMembership
-cmp al,'N'
-je paymentLabel                   ; back to asking membership step
-cmp al,'n'
-je paymentLabel
-print invalidCharMsg
-print pressAnytoContinue
-call pause
-call cls
-jmp MembershipProceedLabel  
-
-;--------------------------------------------------------------------------------------------------
-Bronze:
- mov MembershipLevel,'B'
-print BronzeMsg
- jmp endinghasMembership
- Silver:
- mov MembershipLevel,'S'
- print SilverMsg
- jmp endinghasMembership 
- Gold:
- mov MembershipLevel,'G'
- print GoldMsg
- jmp endinghasMembership
-checkMembership:        ; check member id whether it is valid
-call ReadMembershipF     ;Read Input of membership       
-call validateMemberF      ; Validate Membership Function
-
-mov al,correctMemberId
-cmp al,1
-je correctMemberIdLabel
-print invalidMemberIdMsg
-print pressAnytoContinue
-call pause
-call cls
-jmp MembershipProceedLabel
-
-correctMemberIdLabel:           ;IF correct Member Id , assign corresponding letter to a variable and print out the membership level + discount rate
-mov si,0
-mov al,[input_member_Arr + si]
-cmp al,'B'
-je Bronze
-cmp al,'S'
-je Silver
-cmp al,'G'
-je Gold
-
-endinghasMembership:
-ret
-hasMembership endp
 login proc
     username:
     print logo
@@ -394,6 +735,23 @@ pause proc          ;pause FUNCTION
     pop     cx
     ret 
 pause endp
+converter proc
+  mov     bx,10d    
+    xor     cx,cx          
+a: xor     dx,dx          
+    div     bx             
+    push    dx             
+    inc     cx             
+    test    ax,ax          
+    jnz     a             
+    
+b:  pop     dx             
+    mov     ah,02h         
+    add     dl,30h      
+    int     21h            
+    loop    b 
+ret
+converter endp
 end main
 
 
