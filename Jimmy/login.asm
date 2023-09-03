@@ -34,8 +34,8 @@ SilverMsg db 10,13,"This customer is Silver Membership.  Customer can enjoy 10% 
 GoldMsg db 10,13,"This customer is Gold Membership.  Customer can enjoy 15% discount.$"
 isDot dw 0
 ErrorFound dw 0
-InvalidAmountPaidMsg db 10,13,"Only Accept number (1~9) and and dot (.) $"
-
+InvalidAmountPaidMsg db 10,13,"Only Accept number (1~9) and dot (.) $"
+InvalidAmountPaidMsg2 db 10,13,"Cannot left it blank !$"
 AmountPaidCount dw ?
 AmountPaidtemp dw ?
 exceedDecimal db 0
@@ -125,7 +125,7 @@ mov isDot,0
 call askingAmountPaidFUNCTION
 mov ax,ErrorFound
 cmp ax,1
-je printAllAmountAgain
+jge printAllAmountAgain
 
 mov ah,4ch
 int 21h
@@ -138,10 +138,11 @@ lea dx,PaidAmount                  ;Load the AmountPaid array address to capture
 mov ah,0ah
 int 21h
 
+call validationAmoundPaid
 call whetherAmoundPaidIsNum
 mov ax,ErrorFound
 cmp ax,1
-je endingAskingAmountPaid
+jge endingAskingAmountPaid
 call readAmountWhetherGotDecimal      ;Function that read the AmountPaid and array length11111111
 mov al,whetherGotDecimal
 cmp al,'n'
@@ -150,7 +151,7 @@ AmountGotDecimalLabel:
 call AmountGotDecimal                ;IF got floating point then run this111111111
 mov ax,ErrorFound
 cmp ax,1
-je endingAskingAmountPaid
+jge endingAskingAmountPaid
 jmp endingAskingAmountPaid 
 
 AmountNoDecimal:                      ;IF no floating point then run this1111111111
@@ -158,6 +159,22 @@ call storingAmountPaidWholeNum
 endingAskingAmountPaid:
 ret
 askingAmountPaidFUNCTION endp
+validationAmoundPaid proc
+mov si,0
+mov al,[PaidAmount_Arr + si]
+cmp al,'.'
+je NotValidAmountPaid
+cmp al,13
+je NotValidAmountPaid
+jmp endingValidationAmounPaid
+NotValidAmountPaid:
+inc ErrorFound
+print InvalidAmountPaidMsg2
+print pressAnytoContinue
+call pause
+endingValidationAmounPaid:
+ret
+validationAmoundPaid endp
 whetherAmoundPaidIsNum proc
 call clear
 mov si,0
