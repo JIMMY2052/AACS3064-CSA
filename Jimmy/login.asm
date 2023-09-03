@@ -38,13 +38,13 @@ GoldMsg db 10,13,"This customer is Gold Membership.  Customer can enjoy 15% disc
 grandTotalMsg db "Grand Total             = RM $"
 SSTMsg db "(+) SST (10%)           = RM $"
 DiscountAmount db "(-) Membership Discount = RM $"
-NetTotalToPay db "NET TOTAL               =  RM $"
+NetTotalToPay db "NET TOTAL               = RM $"
 EnterAmount db "Enter Amount = RM$"
 
 SST dw 10
 tempDiscounted dw 0
-grandTotal dw 1000
-grandTotalDecimal12 dw 5
+grandTotal dw 1
+grandTotalDecimal12 dw 55
 grandTotalDecimal34 dw 0
 
 NetTotal dw 0
@@ -72,16 +72,16 @@ logo db 10,13,"               _____                  _  __   __                _
      db 10,13,"                    | |                        | |"                  
      db 10,13,"                    |_|                        |_|",10,13,'$'   
 
-Paymentlogo db 10,13,"            _____                                 _   "
-            db 10,13,"           |  __ \                               | |  "
-            db 10,13,"           | |__) |_ _ _   _ _ __ ___   ___ _ __ | |_ "
-            db 10,13,"           |  ___/ _` | | | | '_ ` _ \ / _ \ '_ \| __|"
-            db 10,13,"           | |  | (_| | |_| | | | | | |  __/ | | | |_ "
-            db 10,13,"           |_|   \__,_|\__, |_| |_| |_|\___|_| |_|\__|"
-            db 10,13,"                        __/ |                         "
-            db 10,13,"                       |___/                          ",10,13,'$'              
+Paymentlogo db 10,13,"                _____                                 _   "
+            db 10,13,"               |  __ \                               | |  "
+            db 10,13,"               | |__) |_ _ _   _ _ __ ___   ___ _ __ | |_ "
+            db 10,13,"               |  ___/ _` | | | | '_ ` _ \ / _ \ '_ \| __|"
+            db 10,13,"               | |  | (_| | |_| | | | | | |  __/ | | | |_ "
+            db 10,13,"               |_|   \__,_|\__, |_| |_| |_|\___|_| |_|\__|"
+            db 10,13,"                            __/ |                         "
+            db 10,13,"                           |___/                          ",10,13,'$'              
 headline db 10,13,"=========================================================================$"
-processingPaymentMsg db "                   Payment Processing... $"
+processingPaymentMsg db "                                   Payment Processing... $"
 idArr LABEL BYTE 
 MAX DB 30 
 ACT DB ? 
@@ -131,9 +131,7 @@ je SSTLabel
 call MemberDiscountFuntion
 jmp CalulateNetTotal
 SSTLabel:
-call cls
 call clear
-print Paymentlogo
 mov ax,grandTotal
 mov NetTotal,ax
 mov ax,grandTotalDecimal12
@@ -301,6 +299,7 @@ jge carry34
 mov NetTotalDecimal34,ax
 call clear
 lp1:
+call clear
 mov ax,NetTotalDecimal12
 add ax,SSTGrandTotalDecimal12
 cmp ax,100
@@ -353,7 +352,19 @@ mov bx,100
 div bx
 add Decimal12Discounted,ax
 mov Decimal34Discounted,dx
+jmp nettotalSubtractDiscount
 ;----------------------------------------------------
+NoBorrow12:
+sub ax,Decimal12Discounted
+mov NetTotalDecimal12,ax
+jmp done_subtract
+
+NoBorrow34:
+sub bx,Decimal34Discounted
+mov NetTotalDecimal34,bx
+jmp subtract_the_decimal12
+
+nettotalSubtractDiscount:
 mov ax,NetTotal
 sub ax,grandTotalDiscounted
 mov NetTotal,ax
@@ -376,15 +387,7 @@ mov ax,NetTotalDecimal12
 sub ax,Decimal12Discounted
 mov NetTotalDecimal12,ax
 
-NoBorrow12:
-sub ax,Decimal12Discounted
-mov NetTotalDecimal12,ax
-jmp done_subtract
 
-NoBorrow34:
-sub bx,Decimal34Discounted
-mov NetTotalDecimal34,bx
-jmp subtract_the_decimal12
 done_subtract:
 ret
 MemberDiscountFuntion endp
