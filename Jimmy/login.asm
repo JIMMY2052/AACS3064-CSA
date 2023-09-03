@@ -41,22 +41,31 @@ AmountPaidtemp dw ?
 exceedDecimal db 0
 ReenterAMount db 10,13,"Only accept 2 Decimal Places! Please re-enter again the amount.$"
 whetherGotDecimal db ?
-
+changeCannotBorrow dw 0
 grandTotalMsg db "Grand Total                 = RM $"
 SSTMsg db "(+) SST (10%)               = RM $"
 DiscountAmount db "(-) Membership Discount $"
 equalSign db " = RM $"
-NetTotalToPay db "Amount To Paid              = RM $"
+NetTotalToPay db "Net Total                   = RM $"
+RoundedNettotalMsg db "Amount To Pay               = RM $"
 EnterAmount db 10,13,"Enter Amount                = RM $"
+insufficentMsg db 10,13,"Insufficient Amount Paid !$"
+ChangesMsg db 10,13,"Changes                     = RM $"
+RoundingUpMsg db " (Rounded Up)$"
 
 AmountPaid dw ?
 AmountPaidDecimal12 dw ?
+changeWholeNum dw 0
+changeDecimal12 dw 0
+
+RoundedNetTotal dw 0
+RoundedNetTotalDecimal12 dw 0
 
 
 SST dw 10
 tempDiscounted dw 0
-grandTotal dw 13107
-grandTotalDecimal12 dw 99
+grandTotal dw 165
+grandTotalDecimal12 dw 85
 grandTotalDecimal34 dw 0
 
 NetTotal dw 0
@@ -116,6 +125,44 @@ mov ds,ax
 call cls
 call login
 call paymentFUNCTION
+printAllAmountAgain2:
+mov ErrorFound,0
+call printingPayment
+call CalculateChangeFUNCTION
+mov ax,ErrorFound
+cmp ax,1
+jge printAllAmountAgain2
+print ChangesMsg
+call printChanges
+
+mov ah,4ch
+int 21h
+main endp
+printChanges proc
+call clear
+mov ax,changeWholeNum
+call converter
+mov ah,02h
+mov dl,'.'
+int 21h
+mov ax,changeDecimal12
+cmp ax,10
+jl printchangeDecimal12For0
+lp888:
+call clear
+mov ax,changeDecimal12
+call converter
+jmp endPrintChanges
+
+printchangeDecimal12For0:
+mov ah,02h
+mov dl,'0'
+int 21h
+jmp lp888
+endPrintChanges:
+ret
+printChanges endp
+printingPayment proc
 printAllAmountAgain:
 call printoutAllAmount
 mov AmountPaid,0
@@ -126,11 +173,63 @@ call askingAmountPaidFUNCTION
 mov ax,ErrorFound
 cmp ax,1
 jge printAllAmountAgain
+ret
+printingPayment endp
+RoundUpFUNCTION proc
+mov ax,NetTotal
+mov RoundedNetTotal,ax
+mov ax,NetTotalDecimal12
+mov RoundedNetTotalDecimal12,ax
+mov ax,NetTotalDecimal34
+cmp ax,50
+jge roundingUp
+jmp endingRoundUP
+roundingUp:
+inc RoundedNetTotalDecimal12
+endingRoundUP:
+ret
+RoundUpFUNCTION endp
+CalculateChangeFUNCTION proc
+mov ErrorFound,0
+mov changeCannotBorrow,0
+mov ax,AmountPaid
+cmp ax,RoundedNetTotal
+jl insufficientChange
+cmp ax,RoundedNetTotal
+je equalWholeNum
+backToChangeCalculation:
+sub ax,RoundedNetTotal
+mov changeWholeNum,ax
+mov ax,AmountPaidDecimal12
+cmp ax,RoundedNetTotalDecimal12
+jl changeBorrow12
+backChangeBorrow12:
+sub ax,RoundedNetTotalDecimal12
+mov changeDecimal12,ax
+jmp endingCalculateChange
 
-mov ah,4ch
-int 21h
-main endp
+changeBorrow12:
+mov ax,changeCannotBorrow
+cmp al,1
+je insufficientChange
+dec changeWholeNum
+add ax,100
+jmp backChangeBorrow12
 
+insufficientChange:
+inc ErrorFound
+print insufficentMsg
+print pressAnytoContinue
+call pause
+jmp endingCalculateChange
+
+equalWholeNum:
+inc changeCannotBorrow
+jmp backToChangeCalculation
+
+endingCalculateChange:
+ret
+CalculateChangeFUNCTION endp
 askingAmountPaidFUNCTION proc
 
 print EnterAmount
@@ -324,9 +423,34 @@ mov NetTotalDecimal12,ax
 CalulateNetTotal:
 call SSTFUNCTION
 call NetTotalFUCTION
+call RoundUpFUNCTION
 
 ret
 paymentFUNCTION endp
+printRoundedTotal proc
+call clear
+mov ax,RoundedNetTotal
+call converter
+mov ah,02h
+mov dl,'.'
+int 21h
+mov ax,RoundedNetTotalDecimal12
+cmp ax,10
+jl printRoundedNetTotalDecimal12For0
+lp666:
+call clear
+mov ax,RoundedNetTotalDecimal12
+call converter
+jmp endPrintRoundedNetTotal
+
+printRoundedNetTotalDecimal12For0:
+mov ah,02h
+mov dl,'0'
+int 21h
+jmp lp666
+endPrintRoundedNetTotal:
+ret
+printRoundedTotal endp
 printoutSSTFUNCTION proc
 call clear
 mov ax,SSTGrandTotal
@@ -817,10 +941,14 @@ printoutAllAmount proc
     print equalSign
     call printoutDiscountedTotalFUNCTION
     skipDisplayDiscountAmount:
-    print headline
     print newline
     print NetTotalToPay
     call printoutNetTotalFUNCTION
+    print headline
+    print newline
+    print RoundedNettotalMsg
+    call printRoundedTotal
+    print RoundingUpMsg
     jmp endingprintAllAmount
     printSpace:
     mov dl,32
@@ -988,6 +1116,24 @@ b:  pop     dx
     loop    b 
 ret
 converter endp
+resetAllTheTotal proc
+mov grandTotal,0
+mov grandTotalDecimal12,0
+mov grandTotalDecimal34,0
+
+mov NetTotal,0
+mov NetTotalDecimal12,0
+mov NetTotalDecimal34,0
+
+mov SSTGrandTotal,0
+mov SSTGrandTotalDecimal12,0
+mov SSTGrandTotalDecimal34,0
+
+mov grandTotalDiscounted,0
+mov Decimal12Discounted,0
+mov Decimal34Discounted,0
+ret
+resetAllTheTotal endp
 end main
 
 
