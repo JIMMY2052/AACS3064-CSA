@@ -19,8 +19,8 @@ id db "sportxpert$"
 pw db "password$"
 invalidMemberIdMsg db 10,13,"Invalid Member ID.$"
 memberProceedMsg db 10,13,"Do you want check membership (y) or back to asking membership (n) > $"
-memberid_Arr db "B01,B02,S01,S03,S05,G02,G03,G04,B03,$"
-memberid_Arr2 db 30 dup ('$')
+memberid_Arr db "B01,B02,S01,S03,S05,G02,G03,G04,B03,B15,B17,B18,B11,$"
+memberid_Arr2 db 50 dup ('$')
 hasMembershipMsg db 10,13,"Do customer has a membership (y = yes , n = no): $"
 invalidCharMsg db 10,13,"Please enter a valid character (y = yes , n = no).",'$'
 pressAnytoContinue db 10,13,"Press any key to continue...$"
@@ -34,6 +34,7 @@ SilverMsg db 10,13,"This customer is Silver Membership.  Customer can enjoy 10% 
 GoldMsg db 10,13,"This customer is Gold Membership.  Customer can enjoy 15% discount.$"
 isDot dw 0
 ErrorFound dw 0
+tempChar db ?
 InvalidAmountPaidMsg db 10,13,"Only Accept number (1~9) and dot (.) $"
 InvalidAmountPaidMsg2 db 10,13,"Cannot left it blank !$"
 AmountPaidCount dw ?
@@ -850,6 +851,7 @@ endforsorting:
     loop ValidateSecondCharMemberId
 ;--------------------------------------------------------------------------------------------------------
     correctSecondCharMemberId:               ;IF correct second char then validate third char
+
     call clear
     mov si,2
     mov di,2
@@ -871,6 +873,13 @@ endforsorting:
     mov correctMemberId,0
     jmp endingvalidateMemberF
     correctThirdCharMemberId:
+    dec di
+    mov dl,[memberid_Arr2 + di]
+    mov tempChar,dl
+    mov si,1
+    mov al,[input_member_Arr + si]
+    cmp al,tempChar
+    jne incorrectCharMemberId
     inc correctMemberId
     endingvalidateMemberF:
     ret
