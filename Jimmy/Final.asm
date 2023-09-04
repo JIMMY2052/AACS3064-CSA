@@ -872,14 +872,18 @@ endforsorting:
     incorrectCharMemberId:
     mov correctMemberId,0
     jmp endingvalidateMemberF
+
     correctThirdCharMemberId:
     dec di
     mov dl,[memberid_Arr2 + di]
     mov tempChar,dl
     mov si,1
     mov al,[input_member_Arr + si]
+    inc di
+    add di,4
     cmp al,tempChar
-    jne incorrectCharMemberId
+    mov al,input_member_Arr[2]
+    jne ValidateThirdCharMemberId
     inc correctMemberId
     endingvalidateMemberF:
     ret
