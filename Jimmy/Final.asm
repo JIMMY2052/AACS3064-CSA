@@ -18,8 +18,8 @@ pw_Msg db 10,13,"Password (x = exit): $"
 id db "sportxpert$"
 pw db "password$"
 invalidMemberIdMsg db 10,13,"Invalid Member ID.$"
-memberProceedMsg db 10,13,"Do you want check membership (y) or back to asking membership (n) > $"
-memberid_Arr db "B01,B02,S01,S03,S05,G02,G03,G04,B03,B15,B17,B18,B11,$"
+memberProceedMsg db 10,13,"Check membership (y) or Back for asking membership (n) > $"
+memberid_Arr db "B01,B02,S01,S03,S05,G02,G03,G04,B03,B15,B17,B18,B11,S11,S15,$"
 memberid_Arr2 db 50 dup ('$')
 hasMembershipMsg db 10,13,"Do customer has a membership (y = yes , n = no): $"
 invalidCharMsg db 10,13,"Please enter a valid character (y = yes , n = no).",'$'
@@ -65,7 +65,7 @@ RoundedNetTotalDecimal12 dw 0
 
 SST dw 10
 tempDiscounted dw 0
-grandTotal dw 8756
+grandTotal dw 1568
 grandTotalDecimal12 dw 56
 grandTotalDecimal34 dw 0
 
@@ -82,9 +82,9 @@ Decimal12Discounted dw 0
 Decimal34Discounted dw 0
 
 member_Arr LABEL BYTE 
-MAXmember_Arr DB 5
+MAXmember_Arr DB 4
 ACTmember_Arr DB ? 
-input_member_Arr DB 5 DUP ('$')
+input_member_Arr DB 4 DUP ('$')
 logo db 10,13,"               _____                  _  __   __                _ "  
      db 10,13,"              / ____|                | | \ \ / /               | |"  
      db 10,13,"             | (___  _ __   ___  _ __| |_ \ V / _ __   ___ _ __| |_"
@@ -125,6 +125,17 @@ mov ds,ax
 
 call cls
 call login
+try:
+call BigPaymentFunction
+mov ah,01h
+int 21h
+cmp al,'y'
+je try
+
+mov ah,4ch
+int 21h
+main endp
+BigPaymentFunction proc
 call paymentFUNCTION
 printAllAmountAgain2:
 mov ErrorFound,0
@@ -135,10 +146,8 @@ cmp ax,1
 jge printAllAmountAgain2
 print ChangesMsg
 call printChanges
-
-mov ah,4ch
-int 21h
-main endp
+ret
+BigPaymentFunction endp
 printChanges proc
 call clear
 mov ax,changeWholeNum
@@ -409,6 +418,7 @@ endingReadAmountWhether:
 ret
 readAmountWhetherGotDecimal endp
 paymentFUNCTION proc
+call resetAllTheTotal
 call hasMembership
 mov al,gotMembership
 cmp al,'n'
@@ -733,6 +743,7 @@ jmp MembershipProceedLabel
 ;--------------------------------------------------------------------------------------------------
 
 checkMembership:        ; check member id whether it is valid
+mov gotMembership,'y'
 call ReadMembershipF        ;Read Input of membership   
 call validateMemberF        ; Validate Membership Function
 mov al,correctMemberId
@@ -783,6 +794,7 @@ ReadMembershipF proc
 ReadMembershipF endp
 validateMemberF proc
 ;---------sorting array into new array for validation------------------
+mov correctMemberId,0
 mov di,0
 mov si,0
 mov cx,1
@@ -1132,9 +1144,7 @@ b:  pop     dx
 ret
 converter endp
 resetAllTheTotal proc
-mov grandTotal,0
-mov grandTotalDecimal12,0
-mov grandTotalDecimal34,0
+
 
 mov NetTotal,0
 mov NetTotalDecimal12,0
