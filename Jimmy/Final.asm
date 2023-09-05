@@ -9,6 +9,7 @@ PRINT macro msg
 newline db 10,13,"$"
 false_login db 0
 countLetter dw 0
+thankyouMsg db 10,13,"Thank you and Please Come Again.$"
 logoutMsg db 10,13,10,13,10,13,"                    You have successfully logged out."
           db 10,13,"                    Thank you for using the system!",'$'
 success_loginMsg db 10,13,"You have successful login!$"
@@ -48,11 +49,17 @@ SSTMsg db "(+) SST (10%)               = RM $"
 DiscountAmount db "(-) Membership Discount $"
 equalSign db " = RM $"
 NetTotalToPay db "Net Total                   = RM $"
+AmountPaidMsg db "Amount Paid                 = RM $"
 RoundedNettotalMsg db "Amount To Pay               = RM $"
 EnterAmount db 10,13,"Enter Amount                = RM $"
 insufficentMsg db 10,13,"Insufficient Amount Paid !$"
 ChangesMsg db 10,13,"Changes                     = RM $"
 RoundingUpMsg db " (Rounded Up)$"
+TotalRoundedUpMsg db 10,13,"Total Rounded               = RM $"
+
+numOfSale dw 0
+totalSalesWholeNum dw 0
+totalSalesDecimal12 dw 0
 
 AmountPaid dw ?
 AmountPaidDecimal12 dw ?
@@ -103,6 +110,15 @@ Paymentlogo db 10,13,"                _____                                 _   
             db 10,13,"                            __/ |                         "
             db 10,13,"                           |___/                          ",10,13,'$'              
 headline db 10,13,"=========================================================================$"
+ Receiptlogo db 10,13,"                  _____               _       _ "  
+             db 10,13,"                 |  __ \             (_)     | |"  
+             db 10,13,"                 | |__) |___  ___ ___ _ _ __ | |_"
+             db 10,13,"                 |  _  // _ \/ __/ _ \ | '_ \| __|"
+             db 10,13,"                 | | \ \  __/ (_|  __/ | |_) | |_" 
+             db 10,13,"                 |_|  \_\___|\___\___|_| .__/ \__|"
+             db 10,13,"                                       | |"        
+             db 10,13,"                                       |_|",10,13,'$'
+
 processingPaymentMsg db "                  Payment Processing...                         $"
 idArr LABEL BYTE 
 MAX DB 30 
@@ -125,16 +141,20 @@ mov ds,ax
 
 call cls
 call login
-try:
 call BigPaymentFunction
-mov ah,01h
-int 21h
-cmp al,'y'
-je try
+call receipt
+
 
 mov ah,4ch
 int 21h
 main endp
+receipt proc
+call cls
+print Receiptlogo
+print headline
+call printReceiptAllAmount
+ret
+receipt endp
 BigPaymentFunction proc
 call paymentFUNCTION
 printAllAmountAgain2:
@@ -146,6 +166,8 @@ cmp ax,1
 jge printAllAmountAgain2
 print ChangesMsg
 call printChanges
+print pressAnytoContinue
+call pause
 ret
 BigPaymentFunction endp
 printChanges proc
@@ -985,6 +1007,80 @@ printoutAllAmount proc
     endingprintAllAmount:
     ret
 printoutAllAmount endp
+printReceiptAllAmount proc
+
+    print newline
+    print grandTotalMsg
+    call printoutGrandTotalFUNCTION
+    print newline
+    print SSTMsg
+    call printoutSSTFUNCTION
+    mov al,gotMembership
+    cmp al,'n'
+    je skipDisplayDiscountAmount1
+    print newline
+    print DiscountAmount
+    mov ax,MembershipRate
+    call converter
+    mov dl,'%'
+    mov ah,02h
+    int 21h
+    mov ax,MembershipRate
+    cmp al,5
+    je printSpace1
+    jmp backToprintingEqual1
+    printSpace1:
+    mov dl,32
+    mov ah,02h
+    int 21h
+    backToprintingEqual1:
+    print equalSign
+    call printoutDiscountedTotalFUNCTION
+    skipDisplayDiscountAmount1:
+    print newline
+    print NetTotalToPay
+    call printoutNetTotalFUNCTION
+    print headline
+    print TotalRoundedUpMsg
+    call printRoundedTotal
+    print newline
+    print AmountPaidMsg
+    call printAmountPaid
+    print ChangesMsg
+    call printChanges
+    print newline
+    print thankyouMsg
+    print pressAnytoContinue
+    call pause
+    ret
+printReceiptAllAmount endp
+printAmountPaid proc
+call clear
+mov ax,AmountPaid
+call converter
+mov ah,02h
+mov dl,'.'
+int 21h
+mov ax,AmountPaidDecimal12
+cmp ax,10
+jl printAmountPaidDecimal12For0
+lp2023:
+call clear
+mov ax,AmountPaidDecimal12
+call converter
+jmp endPrintAmoundPaid
+
+printAmountPaidDecimal12For0:
+mov ah,02h
+mov dl,'0'
+int 21h
+jmp lp2023
+endPrintAmoundPaid:
+ret
+printAmountPaid endp
+
+
+
 login proc
     username:
     print logo
