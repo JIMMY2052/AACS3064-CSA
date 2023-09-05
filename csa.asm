@@ -44,18 +44,18 @@ exceedDecimal db 0
 ReenterAMount db 10,13,"Only accept 2 Decimal Places! Please re-enter again the amount.$"
 whetherGotDecimal db ?
 changeCannotBorrow dw 0
-grandTotalMsg db "Grand Total                 = RM $"
-SSTMsg db "(+) SST (10%)               = RM $"
-DiscountAmount db "(-) Membership Discount $"
+grandTotalMsg db "                    Grand Total                 = RM $"
+SSTMsg db "                    (+) SST (10%)               = RM $"
+DiscountAmount db "                    (-) Membership Discount $"
 equalSign db " = RM $"
-NetTotalToPay db "Net Total                   = RM $"
-AmountPaidMsg db "Amount Paid                 = RM $"
-RoundedNettotalMsg db "Amount To Pay               = RM $"
-EnterAmount db 10,13,"Enter Amount                = RM $"
-insufficentMsg db 10,13,"Insufficient Amount Paid !$"
-ChangesMsg db 10,13,"Changes                     = RM $"
+NetTotalToPay db "                    Net Total                   = RM $"
+AmountPaidMsg db "                    Amount Paid                 = RM $"
+RoundedNettotalMsg db "                    Amount To Pay               = RM $"
+EnterAmount db 10,13,"                    Enter Amount                = RM $"
+insufficentMsg db 10,13,"                    Insufficient Amount Paid !$"
+ChangesMsg db 10,13,"                    Changes                     = RM $"
 RoundingUpMsg db " (Rounded Up)$"
-TotalRoundedUpMsg db 10,13,"Total Rounded               = RM $"
+TotalRoundedUpMsg db 10,13,"                    Total Rounded               = RM $"
 
 numOfSale dw 0
 totalSalesWholeNum dw 0
@@ -109,7 +109,7 @@ Paymentlogo db 10,13,"                _____                                 _   
             db 10,13,"               |_|   \__,_|\__, |_| |_| |_|\___|_| |_|\__|"
             db 10,13,"                            __/ |                         "
             db 10,13,"                           |___/                          ",10,13,'$'              
-headline db 10,13,"=========================================================================$"
+headline db 10,13,"===============================================================================$"
  Receiptlogo db 10,13,"                  _____               _       _ "  
              db 10,13,"                 |  __ \             (_)     | |"  
              db 10,13,"                 | |__) |___  ___ ___ _ _ __ | |_"
@@ -119,7 +119,7 @@ headline db 10,13,"=============================================================
              db 10,13,"                                       | |"        
              db 10,13,"                                       |_|",10,13,'$'
 
-processingPaymentMsg db "                  Payment Processing...                         $"
+processingPaymentMsg db "Payment Processing...                                           $"
 idArr LABEL BYTE 
 MAX DB 30 
 ACT DB ? 
@@ -251,7 +251,7 @@ cmp check_go_to_payment,'Y'
 jne backToMenu
 call BigPaymentFunction
 call receipt
-
+call addingToSummary
 
 mov ah,4ch
 int 21h
@@ -1192,9 +1192,13 @@ jmp lp2023
 endPrintAmoundPaid:
 ret
 printAmountPaid endp
-
-
-
+addingToSummary proc
+mov ax,RoundedNetTotal
+add totalSalesWholeNum,ax
+mov ax,RoundedNetTotalDecimal12
+add totalSalesDecimal12,ax
+ret
+addingToSummary endp
 login proc
     username:
     print logo
