@@ -1301,8 +1301,8 @@ addingToSummary proc
 call clear
 mov ax,RoundedNetTotal
 add totalSalesWholeNum,ax
-mov ax,RoundedNetTotalDecimal12
 call clear
+mov ax,RoundedNetTotalDecimal12
 add totalSalesDecimal12,ax
 cmp ax,100
 jl NoNeedincrease
