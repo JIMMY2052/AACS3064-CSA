@@ -1298,9 +1298,11 @@ endPrintAmoundPaid:
 ret
 printAmountPaid endp
 addingToSummary proc
+call clear
 mov ax,RoundedNetTotal
 add totalSalesWholeNum,ax
 mov ax,RoundedNetTotalDecimal12
+call clear
 add totalSalesDecimal12,ax
 cmp ax,100
 jl NoNeedincrease
