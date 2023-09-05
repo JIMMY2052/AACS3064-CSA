@@ -97,6 +97,7 @@ cart_item_grand_total_price_sen dw 0
 check_exit_order db ?
 check_continue_order db ?
 check_no_item_qty db 0
+check_go_to_payment db ?
 num_of_item db 6
 countItem dw 6
 
@@ -116,6 +117,7 @@ main endp
 
 ; ORDER FUNCTION
 orderFunction proc
+    call clearCartItem
     checkExit:
         call orderMenu
 
@@ -162,7 +164,6 @@ orderFunction proc
 
     ; Exit ORDER FUNCTION
     exitOrderFunction:
-        call clearCartItem
         ret
 orderFunction endp
 
@@ -219,6 +220,7 @@ printItemMenu endp
 ; PROMPT ORDER
 promptOrder proc
     mov check_exit_order, 'N'
+    mov check_go_to_payment, 'N'
 
     promptItem:
         mov ah, 09h
@@ -766,6 +768,7 @@ printCartInstructions proc
     ; confirm payment
     confirmPayment:
         mov check_exit_order, 'X'
+        mov check_go_to_payment, 'Y'
         inc num_of_order
         jmp endInstruction
     
