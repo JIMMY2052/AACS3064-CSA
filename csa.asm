@@ -9,39 +9,40 @@ PRINT macro msg
 newline db 10,13,"$"
 false_login db 0
 countLetter dw 0
-thankyouMsg db 10,13,"                    Thank you and Please Come Again.$"
-logoutMsg db 10,13,10,13,10,13,"                    You have successfully logged out."
-          db 10,13,"                    Thank you for using the system!",'$'
-success_loginMsg db 10,13,"You have successful login!$"
-invalid_ID_password_Msg db 10,13,"You have entered invalid user id or password.",10,13,"Press any key to continue...$"
-userId_Msg db 10,13,"Username (x = exit): $"
-pw_Msg db 10,13,"Password (x = exit): $"
+thankyouMsg db "                    Thank you and Please Come Again.$"
+logoutMsg1 db 10,13,10,13,10,13,"                       You have successfully logged out.$"
+logoutMsg2 db 10,13,"                       Thank you for using the system!$"
+success_loginMsg db 10,13,"                       You have successful login!$"
+invalid_ID_password_Msg db 10,13,"                       You have entered invalid user id or password."
+                        db 10,13,"                       Press any key to continue...$"
+userId_Msg db 10,13,"                       Username (x = exit): $"
+pw_Msg db 10,13,"                       Password (x = exit): $"
 id db "sportxpert$"
 pw db "password$"
-invalidMemberIdMsg db 10,13,"Invalid Member ID.$"
-memberProceedMsg db 10,13,"Check membership (y) or Back for asking membership (n) > $"
+invalidMemberIdMsg db 10,13,"                        Invalid Member ID.$"
+memberProceedMsg db 10,13,"    Check membership (y) or Back for asking membership (n) > $"
 memberid_Arr db "B01,B02,S01,S03,S05,G02,G03,G04,B03,B15,B17,B18,B11,S11,S15,$"
 memberid_Arr2 db 50 dup ('$')
-hasMembershipMsg db 10,13,"Do customer has a membership (y = yes , n = no): $"
-invalidCharMsg db 10,13,"Please enter a valid character (y = yes , n = no).",'$'
-pressAnytoContinue db 10,13,"Press any key to continue...$"
-ReadMemberIDMsg db 10,13,10,13,"Enter Member ID : $"
+hasMembershipMsg db 10,13,"            Do customer has a membership (y = yes , n = no): $"
+invalidCharMsg db 10,13,"            Please enter a valid character (y = yes , n = no).",'$'
+pressAnytoContinue db 10,13,"                       Press any key to continue...$"
+ReadMemberIDMsg db 10,13,10,13,"                        Enter Member ID : $"
 correctMemberId db 0
 RM db "RM$"
 gotMembership db ?
 MembershipRate dw ?
-BronzeMsg db 10,13,"This customer is Bronze Membership.  Customer can enjoy 5% discount.$"
-SilverMsg db 10,13,"This customer is Silver Membership.  Customer can enjoy 10% discount.$"
-GoldMsg db 10,13,"This customer is Gold Membership.  Customer can enjoy 15% discount.$"
+BronzeMsg db 10,13,"     This customer is Bronze Membership.  Customer can enjoy 5% discount.$"
+SilverMsg db 10,13,"     This customer is Silver Membership.  Customer can enjoy 10% discount.$"
+GoldMsg db 10,13,"     This customer is Gold Membership.  Customer can enjoy 15% discount.$"
 isDot dw 0
 ErrorFound dw 0
 tempChar db ?
-InvalidAmountPaidMsg db 10,13,"Only Accept number (1~9) and dot (.) $"
-InvalidAmountPaidMsg2 db 10,13,"Cannot left it blank !$"
+InvalidAmountPaidMsg db 10,13,"                    Only Accept number (1~9) and dot (.) $"
+InvalidAmountPaidMsg2 db 10,13,"                    Cannot left it blank !$"
 AmountPaidCount dw ?
 AmountPaidtemp dw ?
 exceedDecimal db 0
-ReenterAMount db 10,13,"Only accept 2 Decimal Places! Please re-enter again the amount.$"
+ReenterAMount db 10,13,"                    Only accept 2 Decimal Places! Please re-enter again the amount.$"
 whetherGotDecimal db ?
 changeCannotBorrow dw 0
 grandTotalMsg db "                    Grand Total                 = RM $"
@@ -55,10 +56,10 @@ EnterAmount db 10,13,"                    Enter Amount                = RM $"
 insufficentMsg db 10,13,"                    Insufficient Amount Paid !$"
 ChangesMsg db 10,13,"                    Changes                     = RM $"
 RoundingUpMsg db " (Rounded Up)$"
-TotalRoundedUpMsg db 10,13,"                    Total Rounded               = RM $"
+TotalRoundedUpMsg db "                    Total Rounded               = RM $"
 enterYourOptionMsg db "        Enter Your Option --> $"
 MainMenuOption db ?
-ErrorOptionMsg db "Please enter a valid number (1 - 4).$"
+ErrorOptionMsg db "        Please enter a valid number (1 - 4).$"
 
 numOfSale dw 0
 totalSalesWholeNum dw 0
@@ -145,11 +146,11 @@ Main_menu db 10, 13, "        --------------------------------------------------
           db 10, 13, "                    |   4.          Logout             |"
           db 10, 13, "        -------------------------------------------------------------" ,"$"
 
-processingPaymentMsg db "Payment Processing...                                                 $"
+processingPaymentMsg db "                              Payment Processing...                   $"
 spacing db "                                                                                          $"
 smallspacing db "   $"
-totalDailyOrderMsg db "Total Daily Order Made  = $"
-totalDailySalesMsg db "Total Daily Sales Made  = RM $"
+totalDailyOrderMsg db "                       Total Daily Order Made  = $"
+totalDailySalesMsg db "                       Total Daily Sales Made  = RM $"
 idArr LABEL BYTE 
 MAX DB 30 
 ACT DB ? 
@@ -267,7 +268,7 @@ countItem dw 6
 
 ; total number of orders
 num_of_order db 0
-SalesReportMsg db "SportXpert Sales Report $"
+SalesReportMsg db "                            SportXpert Sales Report", 10, 13, "$"
 .code
 main proc
 mov ax,@data
@@ -302,7 +303,8 @@ jmp backToMainMenu
 
 JumpToLogout:
 call summaryFunction
-print logoutMsg
+print logoutMsg1
+print logoutMsg2
 mov ah,4ch
 int 21h
 
@@ -321,8 +323,6 @@ call converter
 print newline
 print totalDailySalesMsg
 call printTotalSales
-print newline
-print newline
 print pressAnytoContinue
 call pause
 ret
@@ -487,7 +487,7 @@ mov ah,0ah
 int 21h
 
 call validationAmoundPaid
-call whetherAmoundPaidIsNum
+call whetherAmountPaidIsNum
 mov ax,ErrorFound
 cmp ax,1
 jge endingAskingAmountPaid
@@ -523,7 +523,7 @@ call pause
 endingValidationAmounPaid:
 ret
 validationAmoundPaid endp
-whetherAmoundPaidIsNum proc
+whetherAmountPaidIsNum proc
 call clear
 mov si,0
 mov cx,1
@@ -540,10 +540,17 @@ NotError:
 inc cx
 inc si
 loop validateTheStringWhetherisNum
-
+checkEnterKey:
+inc si
+mov al,[PaidAmount_Arr + si]
+cmp al,13
+je isNotDotLabel
+jmp backToDot
 mightHaveError:
 cmp al,'.'
 jne isNotDotLabel
+je checkEnterKey
+backToDot:
 inc isDot
 mov ax,isDot
 cmp ax,1
@@ -556,7 +563,7 @@ call pause
 
 ItisvalidStringNum:
 ret
-whetherAmoundPaidIsNum endp
+whetherAmountPaidIsNum endp
 storingAmountPaidWholeNum proc
 call clear
 mov si,0
@@ -1260,6 +1267,7 @@ printReceiptAllAmount proc
     print NetTotalToPay
     call printoutNetTotalFUNCTION
     print newline
+    print cart_item_line
     print TotalRoundedUpMsg
     call printRoundedTotal
     print newline
@@ -1268,7 +1276,10 @@ printReceiptAllAmount proc
     print ChangesMsg
     call printChanges
     print newline
+    print cart_item_line
     print thankyouMsg
+    print newline
+    print cart_item_line
     print pressAnytoContinue
     call pause
     ret
@@ -1365,7 +1376,7 @@ login proc
     loop p1
 
     logout1:
-    print logoutMsg
+    print logoutMsg2
     mov ah,4ch
     int 21h
 
@@ -1427,7 +1438,7 @@ login proc
     jmp username
 
     logout2:
-    print logoutMsg
+    print logoutMsg2
     mov ah,4ch
     int 21h
     validation_pw:
