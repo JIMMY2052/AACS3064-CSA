@@ -9,7 +9,7 @@ PRINT macro msg
 newline db 10,13,"$"
 false_login db 0
 countLetter dw 0
-thankyouMsg db 10,13,"Thank you and Please Come Again.$"
+thankyouMsg db 10,13,"                    Thank you and Please Come Again.$"
 logoutMsg db 10,13,10,13,10,13,"                    You have successfully logged out."
           db 10,13,"                    Thank you for using the system!",'$'
 success_loginMsg db 10,13,"You have successful login!$"
@@ -56,6 +56,9 @@ insufficentMsg db 10,13,"                    Insufficient Amount Paid !$"
 ChangesMsg db 10,13,"                    Changes                     = RM $"
 RoundingUpMsg db " (Rounded Up)$"
 TotalRoundedUpMsg db 10,13,"                    Total Rounded               = RM $"
+enterYourOptionMsg db "        Enter Your Option --> $"
+MainMenuOption db ?
+ErrorOptionMsg db "Please enter a valid number (1 - 4).$"
 
 numOfSale dw 0
 totalSalesWholeNum dw 0
@@ -101,25 +104,52 @@ logo db 10,13,"               _____                  _  __   __                _
      db 10,13,"                    | |                        | |"                  
      db 10,13,"                    |_|                        |_|",10,13,'$'   
 
-Paymentlogo db 10,13,"                _____                                 _   "
-            db 10,13,"               |  __ \                               | |  "
-            db 10,13,"               | |__) |_ _ _   _ _ __ ___   ___ _ __ | |_ "
-            db 10,13,"               |  ___/ _` | | | | '_ ` _ \ / _ \ '_ \| __|"
-            db 10,13,"               | |  | (_| | |_| | | | | | |  __/ | | | |_ "
-            db 10,13,"               |_|   \__,_|\__, |_| |_| |_|\___|_| |_|\__|"
-            db 10,13,"                            __/ |                         "
-            db 10,13,"                           |___/                          ",10,13,'$'              
-headline db 10,13,"===============================================================================$"
- Receiptlogo db 10,13,"                  _____               _       _ "  
-             db 10,13,"                 |  __ \             (_)     | |"  
-             db 10,13,"                 | |__) |___  ___ ___ _ _ __ | |_"
-             db 10,13,"                 |  _  // _ \/ __/ _ \ | '_ \| __|"
-             db 10,13,"                 | | \ \  __/ (_|  __/ | |_) | |_" 
-             db 10,13,"                 |_|  \_\___|\___\___|_| .__/ \__|"
-             db 10,13,"                                       | |"        
-             db 10,13,"                                       |_|",10,13,'$'
+Summarylogo db 10,13,"               _____ "                                           
+            db 10,13,"              / ____|"                                           
+            db 10,13,"              | (___  _   _ _ __ ___  _ __ ___   __ _ _ __ _   _ "
+            db 10,13,"              \___ \| | | | '_ ` _ \| '_ ` _ \ / _` | '__| | | |"
+            db 10,13,"              ____) | |_| | | | | | | | | | | | (_| | |  | |_| |"
+            db 10,13,"             |_____/ \__,_|_| |_| |_|_| |_| |_|\__,_|_|   \__, |"
+            db 10,13,"                                                          __/ |"
+            db 10,13,"                                                          |___/",10,13,'$' 
 
-processingPaymentMsg db "Payment Processing...                                           $"
+Paymentlogo db 10,13,"                   _____                                 _   "
+            db 10,13,"                  |  __ \                               | |  "
+            db 10,13,"                  | |__) |_ _ _   _ _ __ ___   ___ _ __ | |_ "
+            db 10,13,"                  |  ___/ _` | | | | '_ ` _ \ / _ \ '_ \| __|"
+            db 10,13,"                  | |  | (_| | |_| | | | | | |  __/ | | | |_ "
+            db 10,13,"                  |_|   \__,_|\__, |_| |_| |_|\___|_| |_|\__|"
+            db 10,13,"                                _/ |                         "
+            db 10,13,"                              |___/                          ",10,13,'$'              
+headline db 10,13,"===============================================================================$"
+ Receiptlogo db 10,13,"                       _____               _       _ "  
+             db 10,13,"                      |  __ \             (_)     | |"  
+             db 10,13,"                      | |__) |___  ___ ___ _ _ __ | |_"
+             db 10,13,"                      |  _  // _ \/ __/ _ \ | '_ \| __|"
+             db 10,13,"                      | | \ \  __/ (_|  __/ | |_) | |_" 
+             db 10,13,"                      |_|  \_\___|\___\___|_| .__/ \__|"
+             db 10,13,"                                            | |"        
+             db 10,13,"                                            |_|",'$'
+
+MainMenulogo db 10,13,"               __  __       _         __  __ "                  
+             db 10,13,"              |  \/  |     (_)       |  \/  |"                  
+             db 10,13,"              | \  / | __ _ _ _ __   | \  / | ___ _ __  _   _"  
+             db 10,13,"              | |\/| |/ _` | | '_ \  | |\/| |/ _ \ '_ \| | | |" 
+             db 10,13,"              | |  | | (_| | | | | | | |  | |  __/ | | | |_| |" 
+             db 10,13,"              |_|  |_|\__,_|_|_| |_| |_|  |_|\___|_| |_|\__,_|",'$'
+
+Main_menu db 10, 13, "        -------------------------------------------------------------" 
+          db 10, 13, "                    |   1.          Membership         |" 
+          db 10, 13, "                    |   2.          Order              |" 
+          db 10, 13, "                    |   3.          Summary            |" 
+          db 10, 13, "                    |   4.          Logout             |"
+          db 10, 13, "        -------------------------------------------------------------" ,"$"
+
+processingPaymentMsg db "Payment Processing...                                                 $"
+spacing db "                                                                                          $"
+smallspacing db "   $"
+totalDailyOrderMsg db "Total Daily Order Made  = $"
+totalDailySalesMsg db "Total Daily Sales Made  = RM $"
 idArr LABEL BYTE 
 MAX DB 30 
 ACT DB ? 
@@ -136,7 +166,7 @@ PaidAmount label byte
     PaidAmount_Arr db 10 dup('$')
 
 
-    ; newline
+; newline
 order_newline db 10, 13, "$"
 
 ; order & cart logo
@@ -210,7 +240,7 @@ item5 db "Unisex Sport Socks             $"
 item6 db "Nike Grip Dri-FIT Studio Socks $"
 
 item_price_ringgit dw 29, 39, 55, 49, 27, 45
-item_price_sen dw 45, 00, 00, 59, 99, 00
+item_price_sen dw 00, 00, 00, 00, 00, 00
 
 ; cart item quantity & grand total
 item_selected db ?
@@ -237,7 +267,7 @@ countItem dw 6
 
 ; total number of orders
 num_of_order db 0
-
+SalesReportMsg db "SportXpert Sales Report $"
 .code
 main proc
 mov ax,@data
@@ -245,20 +275,97 @@ mov ds,ax
 
 call cls
 call login
-backToMenu:
+backToMainMenu:
+call MainMenu
+cmp MainMenuOption,1
+je JumpToMembershipFunction
+cmp MainMenuOption,2
+je JumpToOrderFunction
+cmp MainMenuOption,3
+je JumpToSummaryFunction
+cmp MainMenuOption,4
+je JumpToLogout
+
+JumpToMembershipFunction:
+jmp backToMainMenu
+
+JumpToOrderFunction:
 call orderFunction
 cmp check_go_to_payment,'Y'
-jne backToMenu
+jne backToMainMenu
+call PaymentReceiptAddingSummaryFunction
+jmp backToMainMenu
+
+JumpToSummaryFunction:
+call summaryFunction
+jmp backToMainMenu
+
+JumpToLogout:
+call summaryFunction
+print logoutMsg
+mov ah,4ch
+int 21h
+
+main endp
+
+
+summaryFunction proc
+call cls
+print Summarylogo
+print newline
+print SalesReportMsg
+print newline
+print totalDailyOrderMsg
+mov ax,numOfSale
+call converter
+print newline
+print totalDailySalesMsg
+call printTotalSales
+print newline
+print newline
+print pressAnytoContinue
+call pause
+ret
+summaryFunction endp
+PaymentReceiptAddingSummaryFunction proc
 call BigPaymentFunction
 call receipt
 call addingToSummary
-
-mov ah,4ch
+ret
+PaymentReceiptAddingSummaryFunction endp
+MainMenu proc
+mainMenuLabel:
+call cls
+mov MainMenuOption,0
+print MainMenulogo
+print Main_menu
+print newline
+print enterYourOptionMsg
+mov ah,01h
 int 21h
-main endp
+sub al,30h
+mov MainMenuOption,al
+cmp al,1
+jl ErrorOption
+cmp al,4
+jg ErrorOption
+jmp endingMainMenu
+ErrorOption:
+print newline
+print ErrorOptionMsg
+print pressAnytoContinue
+call pause
+jmp mainMenuLabel
+endingMainMenu:
+ret
+MainMenu endp
 receipt proc
 call cls
 print Receiptlogo
+print spacing
+call printDate
+print smallspacing
+call printTime
 call viewItemCart
 print cart_item_line
 call printReceiptAllAmount
@@ -1122,8 +1229,6 @@ printoutAllAmount proc
     ret
 printoutAllAmount endp
 printReceiptAllAmount proc
-
-    print newline
     print grandTotalMsg
     call printoutGrandTotalFUNCTION
     print newline
@@ -1197,8 +1302,39 @@ mov ax,RoundedNetTotal
 add totalSalesWholeNum,ax
 mov ax,RoundedNetTotalDecimal12
 add totalSalesDecimal12,ax
+cmp ax,100
+jl NoNeedincrease
+inc totalSalesWholeNum
+sub ax,100
+mov totalSalesDecimal12,ax
+NoNeedincrease:
+inc numOfSale
 ret
 addingToSummary endp
+printTotalSales proc
+call clear
+mov ax,totalSalesWholeNum
+call converter
+mov ah,02h
+mov dl,'.'
+int 21h
+mov ax,totalSalesDecimal12
+cmp ax,10
+jl printTotalSalesDecimal12For0
+lp2024:
+call clear
+mov ax,totalSalesDecimal12
+call converter
+jmp endPrintTotalSales
+
+printTotalSalesDecimal12For0:
+mov ah,02h
+mov dl,'0'
+int 21h
+jmp lp2024
+endPrintTotalSales:
+ret
+printTotalSales endp
 login proc
     username:
     print logo
@@ -2097,6 +2233,7 @@ MOV BX,AX
 CALL DISP
 ret
 printDate endp
+
 DISP PROC
 MOV DL,BH      ; Since the values are in BX, BH Part
 ADD DL,30H     ; ASCII Adjustment
@@ -2108,6 +2245,42 @@ MOV AH,02H     ; To Print in DOS
 INT 21H
 RET
 DISP ENDP      ; End Disp Procedure
+printTime proc
+HOUR:
+MOV AH,2CH    ; To get System Time
+INT 21H
+MOV AL,CH     ; Hour is in CH
+AAM
+MOV BX,AX
+CALL DISP
+
+MOV DL,':'
+MOV AH,02H    ; To Print : in DOS
+INT 21H
+
+;Minutes Part
+MINUTES:
+MOV AH,2CH    ; To get System Time
+INT 21H
+MOV AL,CL     ; Minutes is in CL
+AAM
+MOV BX,AX
+CALL DISP
+
+MOV DL,':'    ; To Print : in DOS
+MOV AH,02H
+INT 21H
+
+;Seconds Part
+Seconds:
+MOV AH,2CH    ; To get System Time
+INT 21H
+MOV AL,DH     ; Seconds is in DH
+AAM
+MOV BX,AX
+CALL DISP
+ret
+printTime endp
 end main
 
 
