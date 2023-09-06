@@ -42,7 +42,7 @@ InvalidAmountPaidMsg2 db 10,13,"                    Cannot left it blank !$"
 AmountPaidCount dw ?
 AmountPaidtemp dw ?
 exceedDecimal db 0
-ReenterAMount db 10,13,"                    Only accept 2 Decimal Places! Please re-enter again the amount.$"
+ReenterAMount db 10,13,"       Only accept 2 Decimal Places! Please re-enter again the amount.$"
 whetherGotDecimal db ?
 changeCannotBorrow dw 0
 grandTotalMsg db "                    Grand Total                 = RM $"
@@ -546,8 +546,9 @@ loop validateTheStringWhetherisNum
 checkEnterKey:
 inc si
 mov al,[PaidAmount_Arr + si]
+dec si
 cmp al,13
-je isNotDotLabel
+jne isNotDotLabel
 jmp backToDot
 mightHaveError:
 cmp al,'.'
@@ -658,6 +659,11 @@ inc cx
 inc AmountPaidCount
 loop Reading_priceWholeNumber
 next1:
+inc si
+mov al,[PaidAmount_Arr+si]
+dec si
+cmp al,13
+je AmountNoDecimalLabel
 mov whetherGotDecimal,'y'
 jmp endingReadAmountWhether
 AmountNoDecimalLabel:
