@@ -1338,12 +1338,12 @@ mov ax,totalSalesDecimal12
 cmp ax,100
 jge increasetotalSalesWhole
 checkingAgain:
-cmp ax,10
-jl printTotalSalesDecimal12For0
-lp2024:
 call clear
 mov ax,totalSalesWholeNum
 call converter
+cmp ax,10
+jl printTotalSalesDecimal12For0
+lp2024:
 mov ah,02h
 mov dl,'.'
 int 21h
