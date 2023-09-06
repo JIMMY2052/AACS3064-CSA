@@ -547,8 +547,8 @@ checkEnterKey:
 inc si
 mov al,[PaidAmount_Arr + si]
 dec si
-cmp al,13
-jne isNotDotLabel
+cmp al,'.'
+je isNotDotLabel
 jmp backToDot
 mightHaveError:
 cmp al,'.'
