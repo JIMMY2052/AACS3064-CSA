@@ -887,8 +887,16 @@ mov bx,100
 div bx
 add Decimal12Discounted,ax
 mov Decimal34Discounted,dx
+mov ax,Decimal12Discounted
+cmp ax,100
+jge Decimal12DiscountedMorethan100
 jmp nettotalSubtractDiscount
 ;----------------------------------------------------
+Decimal12DiscountedMorethan100:
+sub ax,100
+mov Decimal12Discounted,ax
+inc grandTotalDiscounted
+jmp nettotalSubtractDiscount
 NoBorrow12:
 sub ax,Decimal12Discounted
 mov NetTotalDecimal12,ax
@@ -1336,12 +1344,14 @@ checkingAgain:
 call clear
 mov ax,totalSalesWholeNum
 call converter
-cmp ax,10
-jl printTotalSalesDecimal12For0
-lp2024:
 mov ah,02h
 mov dl,'.'
 int 21h
+call clear
+mov ax,totalSalesDecimal12
+cmp ax,10
+jl printTotalSalesDecimal12For0
+lp2024:
 call clear
 mov ax,totalSalesDecimal12
 call converter
