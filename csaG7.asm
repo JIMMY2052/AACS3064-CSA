@@ -1749,13 +1749,19 @@ promptContinueOrder proc
         int 21h
         jmp orderContinuePrompt
     
+    ; continue order
+    continueOrder:
+        mov check_continue_order, 'Y'
+        jmp endPromptContinueOrder
+
     ; go to view cart
     gotoViewCart:
         mov check_continue_order, 'N'
-
-    ; continue order
-    continueOrder:
+    
+    ; end prompt continue order
+    endPromptContinueOrder:
         ret
+
 promptContinueOrder endp
 
 ; PRINT CART LOGO
