@@ -123,14 +123,8 @@ Paymentlogo db 10,13,"                   _____                                 _
             db 10,13,"                                _/ |                         "
             db 10,13,"                              |___/                          ",10,13,'$'              
 headline db 10,13,"===============================================================================$"
- Receiptlogo db 10,13,"                       _____               _       _ "  
-             db 10,13,"                      |  __ \             (_)     | |"  
-             db 10,13,"                      | |__) |___  ___ ___ _ _ __ | |_"
-             db 10,13,"                      |  _  // _ \/ __/ _ \ | '_ \| __|"
-             db 10,13,"                      | | \ \  __/ (_|  __/ | |_) | |_" 
-             db 10,13,"                      |_|  \_\___|\___\___|_| .__/ \__|"
-             db 10,13,"                                            | |"        
-             db 10,13,"                                            |_|",'$'
+
+ Receiptlogo db "                           RECEIPT$"
 
 MainMenulogo db 10,13,"               __  __       _         __  __ "                  
              db 10,13,"              |  \/  |     (_)       |  \/  |"                  
@@ -147,7 +141,7 @@ Main_menu db 10, 13, "        --------------------------------------------------
           db 10, 13, "        -------------------------------------------------------------" ,"$"
 
 processingPaymentMsg db "                              Payment Processing...                   $"
-spacing db "                                                                                          $"
+spacing db "                        $"
 smallspacing db "   $"
 totalDailyOrderMsg db "                       Total Daily Order Made  = $"
 totalDailySalesMsg db "                       Total Daily Sales Made  = RM $"
