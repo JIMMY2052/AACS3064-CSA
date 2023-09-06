@@ -238,7 +238,7 @@ item5 db "Unisex Sport Socks             $"
 item6 db "Nike Grip Dri-FIT Studio Socks $"
 
 item_price_ringgit dw 29, 39, 55, 49, 27, 45
-item_price_sen dw 00, 00, 00, 00, 00, 00
+item_price_sen dw 00, 00, 00, 00, 00, 55
 
 ; cart item quantity & grand total
 item_selected db ?
@@ -1338,6 +1338,7 @@ call converter
 mov ah,02h
 mov dl,'.'
 int 21h
+call clear
 mov ax,totalSalesDecimal12
 cmp ax,100
 jge increasetotalSalesWhole
