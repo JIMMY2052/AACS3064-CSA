@@ -356,6 +356,7 @@ ret
 MainMenu endp
 receipt proc
 call cls
+print cart_item_line
 print Receiptlogo
 print spacing
 call printDate
