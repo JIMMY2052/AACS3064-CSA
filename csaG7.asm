@@ -1332,12 +1332,7 @@ inc numOfSale
 ret
 addingToSummary endp
 printTotalSales proc
-call clear
-mov ax,totalSalesWholeNum
-call converter
-mov ah,02h
-mov dl,'.'
-int 21h
+
 call clear
 mov ax,totalSalesDecimal12
 cmp ax,100
@@ -1346,6 +1341,12 @@ checkingAgain:
 cmp ax,10
 jl printTotalSalesDecimal12For0
 lp2024:
+call clear
+mov ax,totalSalesWholeNum
+call converter
+mov ah,02h
+mov dl,'.'
+int 21h
 call clear
 mov ax,totalSalesDecimal12
 call converter
