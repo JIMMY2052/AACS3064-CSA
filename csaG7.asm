@@ -1341,10 +1341,11 @@ mov ah,02h
 mov dl,'.'
 int 21h
 mov ax,totalSalesDecimal12
-cmp ax,10
-jl printTotalSalesDecimal12For0
 cmp ax,100
 jge increasetotalSalesWhole
+checkingAgain:
+cmp ax,10
+jl printTotalSalesDecimal12For0
 lp2024:
 call clear
 mov ax,totalSalesDecimal12
@@ -1355,7 +1356,7 @@ increasetotalSalesWhole:
 sub ax,100
 mov totalSalesDecimal12,ax
 inc totalSalesWholeNum
-jmp lp2024
+jmp checkingAgain
 
 printTotalSalesDecimal12For0:
 mov ah,02h
