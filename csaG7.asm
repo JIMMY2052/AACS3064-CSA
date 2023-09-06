@@ -185,16 +185,13 @@ order_cart_logo db 10, 13, "                         _____          _____ ______
                 db 10, 13, "                        \_____/_/    \_\_|  \_\ |_|   ", 10, 13, "$"
 
 ; item menu
-item_menu db 10, 13, "        -------------------------------------------------------------" 
+item_menu_heading db 10, 13, "        -------------------------------------------------------------" 
           db 10, 13, "        |  No.  |                 Item               |  Price (RM)  |" 
-          db 10, 13, "        -------------------------------------------------------------" 
-          db 10, 13, "        |   1.  |     Everlast Baseball Men's Cap    |     29.00    |" 
-          db 10, 13, "        |   2.  |    Under Armour Branded Mens Cap   |     39.00    |" 
-          db 10, 13, "        |   3.  |        Puma Pioneer Backpack       |     55.00    |" 
-          db 10, 13, "        |   4.  |     Decathlon Trekking Backpack    |     49.00    |" 
-          db 10, 13, "        |   5.  |          Unisex Sport Socks        |     27.00    |" 
-          db 10, 13, "        |   6.  |    Nike Grip Dri-FIT Studio Socks  |     45.00    |" 
-          db 10, 13, "        -------------------------------------------------------------", 0dh, 0ah, "$"
+          db 10, 13, "        -------------------------------------------------------------", 10, 13, "$" 
+item_menu_space1 db "        $"
+item_menu_space2 db "  $"
+item_menu_border db "|   $"
+item_menu_line db "        -------------------------------------------------------------", 10, 13, "$"
 
 ; order prompt
 order_item_prompt db 10, 13, "        Enter Item No. (C - View Cart, X - Exit): $"
@@ -265,6 +262,7 @@ check_no_item_qty db 0
 check_go_to_payment db ?
 num_of_item db 6
 countItem dw 6
+countMenuItem dw 6
 
 ; total number of orders
 num_of_order db 0
@@ -1588,15 +1586,110 @@ orderMenu endp
 printItemMenu proc
     call CLS
 
+    ; order logo
     mov ah, 09h
     lea dx, order_logo
     int 21h
 
+    ; item menu heading
     mov ah, 09h
-    lea dx, item_menu
+    lea dx, item_menu_heading
+    int 21h
+
+    ; print all items sold
+    mov si, 0
+    mov di, 1
+    mov cx, 6
+    mov countMenuItem, 6
+    printAllItem:
+        mov ah, 09h
+        lea dx, item_menu_space1
+        int 21h
+
+        mov ah, 09h
+        lea dx, item_menu_border
+        int 21h
+
+        mov ah, 02h
+        mov dl, '0'
+        int 21h
+
+        mov ax, di
+        mov ah, 02h
+        mov dl, al
+        add dl, 30h
+        int 21h
+
+        call printItemMenuBorder
+
+        mov ah, 09h
+        mov dx, items_available[si]
+        int 21h
+
+        call printItemMenuBorder
+        mov ah, 09h
+        lea dx, item_menu_space2
+        int 21h
+
+        call printItemMenuPrice
+
+        mov ah, 09h
+        lea dx, item_menu_space2
+        int 21h
+
+        mov ah, 09h
+        lea dx, item_menu_space2
+        int 21h
+
+        mov ah, 02h
+        mov dl, '|'
+        int 21h
+
+        mov ah, 09h
+        lea dx, order_newline
+        int 21h
+    
+        mov cx, countMenuItem
+        dec countMenuItem
+        add si, 2
+        inc di
+        loop printAllItem
+    
+    mov ah, 09h
+    lea dx, item_menu_line
     int 21h
     ret
 printItemMenu endp
+
+; PRINT ITEM MENU BORDER
+printItemMenuBorder proc
+    mov ah, 09h
+    lea dx, item_menu_space2
+    int 21h
+
+    mov ah, 09h
+    lea dx, item_menu_border
+    int 21h
+    ret
+printItemMenuBorder endp
+
+; PRINT ITEM MENU PRICE
+printItemMenuPrice proc
+    mov ax, item_price_ringgit[si]
+    call printZero
+    mov ax, item_price_ringgit[si]
+    call converter
+
+    mov ah, 02h
+    mov dl, '.'
+    int 21h
+
+    mov ax, item_price_sen[si]
+    call printZero
+    mov ax, item_price_sen[si]
+    call converter
+    ret
+printItemMenuPrice endp
 
 ; PROMPT ORDER
 promptOrder proc
@@ -1886,6 +1979,7 @@ printItemList proc
     ; Price (ringgit)
     mov ax, item_price_ringgit[si]
     call printZero
+    mov ax, item_price_ringgit[si]
     call converter
 
     mov ah, 02h
@@ -1894,9 +1988,9 @@ printItemList proc
 
     ; Price (sen)
     mov ax, item_price_sen[si]
-    call converter
-    mov ax, item_price_sen[si]
     call printZero
+    mov ax, item_price_sen[si]
+    call converter
 
     mov ah, 09h
     lea dx, cart_item_space
