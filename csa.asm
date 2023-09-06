@@ -1385,7 +1385,7 @@ login proc
     dec si
     cmp bl,13             
     jne backNotLogout
-    print logoutMsg
+    print logoutMsg2
     mov ah,4ch
     int 21h
 
@@ -1443,7 +1443,7 @@ login proc
     dec si
     cmp bl,13             
     jne backNotLogoutP
-    print logoutMsg
+    print logoutMsg2
     mov ah,4ch
     int 21h
     
