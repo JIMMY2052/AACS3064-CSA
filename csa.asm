@@ -280,10 +280,13 @@ backToMainMenu:
 call MainMenu
 cmp MainMenuOption,1
 je JumpToMembershipFunction
+
 cmp MainMenuOption,2
 je JumpToOrderFunction
+
 cmp MainMenuOption,3
 je JumpToSummaryFunction
+
 cmp MainMenuOption,4
 je JumpToLogout
 
@@ -1366,6 +1369,7 @@ login proc
     mov bl,[input_idArr+si]
     cmp bl,'x'                  ; jump to End Program IF "x"
     je logout1
+    backNotLogout:
     p1:
     mov bl,[input_idArr+si]
     cmp bl,13
@@ -1376,7 +1380,12 @@ login proc
     loop p1
 
     logout1:
-    print logoutMsg2
+    mov si,1
+    mov bl,[input_idArr+si]
+    dec si
+    cmp bl,13             
+    jne backNotLogout
+    print logoutMsg
     mov ah,4ch
     int 21h
 
@@ -1413,6 +1422,7 @@ login proc
     mov bl,[input_pwArr+si]
     cmp bl,'x'                  ; jump to End Program IF "x"
     je logout2
+    backNotLogoutP:
     p2:
     mov bl,[input_pwArr+si]
     cmp bl,13
@@ -1427,6 +1437,16 @@ login proc
     mov si,0
     jmp validation_pw
 
+    logout2:
+    mov si,1
+    mov bl,[input_pwArr+si]
+    dec si
+    cmp bl,13             
+    jne backNotLogoutP
+    print logoutMsg
+    mov ah,4ch
+    int 21h
+    
     invalid_pw:
     inc false_login
     jmp checklogin
@@ -1437,10 +1457,7 @@ login proc
     call CLS
     jmp username
 
-    logout2:
-    print logoutMsg2
-    mov ah,4ch
-    int 21h
+    
     validation_pw:
     mov cx,countLetter
     mov bl,[input_pwArr+si]
