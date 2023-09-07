@@ -232,7 +232,7 @@ item5 db "Unisex Sport Socks             $"
 item6 db "Nike Grip Dri-FIT Studio Socks $"
 
 item_price_ringgit dw 29, 39, 55, 49, 27, 45
-item_price_sen dw 00, 00, 00, 00, 00, 55
+item_price_sen dw 00, 00, 00, 00, 00, 00
 
 ; cart item quantity & grand total
 item_selected db ?
@@ -2039,6 +2039,7 @@ calculateSubtotal proc
     mul bx
     mov current_item_price_ringgit, ax
 
+    call clear
     mov ax, item_price_sen[si]
     mov bx, qty_items[si]
     mul bx
@@ -2102,6 +2103,7 @@ printCartGrandTotal proc
     jl startPrintGrandTotal
 
     ; if sen is greater than 100
+    call clear
     mov ax, cart_item_grand_total_price_sen
     mov bx, 100
     div bx
