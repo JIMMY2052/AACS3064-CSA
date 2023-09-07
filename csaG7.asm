@@ -864,21 +864,37 @@ MemberDiscountFuntion proc
 ;----------------------------------------------------
 mov ax,grandTotal
 mov NetTotal,ax
+mov grandTotalDiscounted,ax
 mov ax,grandTotalDecimal12
 mov NetTotalDecimal12,ax
-mov ax,NetTotal
-mov bx,MembershipRate
-mul bx
-mov tempDiscounted,ax
 call clear
-mov ax,tempDiscounted
-mov bx,100
-div bx
+mov ax,grandTotalDiscounted
+mov bx,100;
+div bx;
 mov grandTotalDiscounted,ax
 mov Decimal12Discounted,dx
+
+
+call clear
+mov ax,grandTotalDiscounted
+mov bx,MembershipRate
+mul bx
+mov grandTotalDiscounted,ax
+call clear
+mov ax,Decimal12Discounted
+mov bx,MembershipRate
+mul bx
+cmp ax,100
+jge increaseDicountedGrandTotal
+jmp NoincreaseDicountedGrandTotal
+increaseDicountedGrandTotal:
+mov bx,100
+div bx
+add grandTotalDiscounted,ax
+mov Decimal12Discounted,dx
+NoincreaseDicountedGrandTotal:
 ;----------------------------------------------------
 mov ax,NetTotalDecimal12
-mov NetTotalDecimal12,ax
 mov bx,MembershipRate
 mul bx
 mov tempDiscounted,ax
