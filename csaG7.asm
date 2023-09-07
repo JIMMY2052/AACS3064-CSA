@@ -1225,9 +1225,6 @@ printoutAllAmount proc
     print newline
     print grandTotalMsg
     call printoutGrandTotalFUNCTION
-    print newline
-    print SSTMsg
-    call printoutSSTFUNCTION
     mov al,gotMembership
     cmp al,'n'
     je skipDisplayDiscountAmount
@@ -1245,6 +1242,9 @@ printoutAllAmount proc
     print equalSign
     call printoutDiscountedTotalFUNCTION
     skipDisplayDiscountAmount:
+    print newline
+    print SSTMsg
+    call printoutSSTFUNCTION
     print newline
     print NetTotalToPay
     call printoutNetTotalFUNCTION
