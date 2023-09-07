@@ -219,6 +219,7 @@ cart_choice_menu db "                           1 - Return to Order"
 cart_choice_prompt db 10, 13, "                    Enter a choice (1-3): $"
 
 ; confirmation
+confirm_exit_order db 10, 13, "        Confirm exit order? (Y/N): $"
 confirm_cancel_order db 10, 13, "             Confirm cancel order? (Y/N): $"
 confirm_payment db 10, 13, "       Confirm proceed to payment? (Y/N): $"
 
@@ -1507,7 +1508,7 @@ orderFunction proc
         call orderMenu
 
         cmp check_exit_order, 'X'       ; exit
-        je exitOrderFunction
+        je promptConfirmExitOrderFunction
         cmp check_exit_order, 'C'       ; view cart
         je startViewCart
 
@@ -1547,9 +1548,38 @@ orderFunction proc
             cmp check_continue_order, 'N'   ; not continue order
             je exitOrderFunction
 
+    ; Confirm exit ORDER FUNCTION
+    promptConfirmExitOrderFunction:
+        mov ah, 09h
+        lea dx, confirm_exit_order
+        int 21h
+
+        mov ah, 01h
+        int 21h
+
+        cmp al, 'y'         ; exit order
+        je exitOrderFunction
+        cmp al, 'Y'         ; exit order
+        je exitOrderFunction
+        cmp al, 'n'         ; stay order
+        je stayInOrderFunction
+        cmp al, 'N'         ; stay order
+        je stayInOrderFunction
+        jne printInvalidExitConfirmation
+    
+    stayInOrderFunction:
+        mov check_continue_order, 'Y'
+        mov check_exit_order, 'N'
+        jmp checkExit
+    
+    printInvalidExitConfirmation:
+        mov ah, 09h
+        lea dx, invalid_input
+        int 21h
+        jmp promptConfirmExitOrderFunction 
+
     ; Exit ORDER FUNCTION
     exitOrderFunction:
-        
         ret
 orderFunction endp
 
