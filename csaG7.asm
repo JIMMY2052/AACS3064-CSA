@@ -289,6 +289,9 @@ countMenuItem dw 6
 ; total number of orders
 num_of_order db 0
 SalesReportMsg db "                            SportXpert Sales Report", 10, 13, "$"
+logoutMsg3 db 10,13,10,13,10,13,"Do you really want to logout the system ?(y = yes or n = no) > $"
+logoutInvalidCharMsg db 10,13,"Invalid Character. Please enter (y = yes or n = no) only! $"
+logoutVar db ?
 .code
 main proc
 mov ax,@data
@@ -332,6 +335,11 @@ call settingFunction
 jmp backToMainMenu
 
 JumpToLogout:
+call AreYouSureLogout
+cmp logoutVar,'y'
+je ConfirmLogout
+jmp backToMainMenu
+ConfirmLogout:
 call summaryFunction
 print logoutMsg1
 print logoutMsg2
@@ -340,6 +348,34 @@ int 21h
 
 main endp
 
+AreYouSureLogout proc
+askingLogout:
+call videoMode
+print logoutMsg3
+mov ah,01h
+int 21h
+cmp al,'y'
+je yesLogout
+cmp al,'Y'
+je yesLogout
+cmp al,'n'
+je NoLogout
+cmp al,'N'
+je NoLogout
+print logoutInvalidCharMsg
+print pressAnytoContinue
+call pause
+jmp askingLogout
+
+yesLogout:
+mov logoutVar,'y'
+jmp endingAreYouSureLogout
+
+NoLogout:
+mov logoutVar,'n'
+endingAreYouSureLogout:
+ret
+AreYouSureLogout endp
 summaryFunction proc
 call videoMode
 print Summarylogo
