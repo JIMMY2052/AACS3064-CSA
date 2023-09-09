@@ -139,8 +139,32 @@ Main_menu db 10, 13, "        --------------------------------------------------
           db 10, 13, "                    |   1.          Membership         |" 
           db 10, 13, "                    |   2.          Order              |" 
           db 10, 13, "                    |   3.          Summary            |" 
-          db 10, 13, "                    |   4.          Logout             |"
+          db 10, 13, "                    |   4.          Setting            |"
+          db 10, 13, "                    |   5.          Logout             |"
           db 10, 13, "        -------------------------------------------------------------" ,"$"
+
+Settinglogo db 10,13,"                         _____      _   _   _"             
+             db 10,13,"                        / ____|    | | | | (_)"            
+             db 10,13,"                       | (___   ___| |_| |_ _ _ __   __ _" 
+             db 10,13,"                        \___ \ / _ \ __| __| | '_ \ / _` |"
+             db 10,13,"                        ____) |  __/ |_| |_| | | | | (_| |"
+             db 10,13,"                       |_____/ \___|\__|\__|_|_| |_|\__, |"
+             db 10,13,"                                                     __/ |"
+             db 10,13,"                                                    |___/" ,"$"
+    colorMenu db 10, 13, "        -------------------------------------------------------------"    
+              db 10,13,"                    |  1.          Blue                     |" 
+              db 10,13,"                    |  2.          Green                    |" 
+    	      db 10,13,"                    |  3.          Cyan                     |" 
+        	  db 10,13,"                    |  4.          White                    |"
+        	  db 10,13,"                    |  5.          Magenta                  |" 
+              db 10,13,"                    |  6.          Brown                    |" 
+    	      db 10,13,"                    |  7.          Light Gray               |" 
+        	  db 10,13,"                    |  8.          Light Blue               |"
+        	  db 10, 13, "        -------------------------------------------------------------" ,"$" 
+    txtColorPrompt db 10,13,"Enter the color you want to change (x = exit): $"
+    invalidColorMsg db 10,13,"Invalid Color Code! Please re-enter. Press any key to continue... $" 
+    
+    inputColor db 7; set original color   
 
 processingPaymentMsg db "                              Payment Processing...                   $"
 spacing db "                        $"
@@ -269,7 +293,7 @@ main proc
 mov ax,@data
 mov ds,ax
 
-call cls
+call videoMode
 call login
 backToMainMenu:
 call MainMenu
@@ -283,6 +307,9 @@ cmp MainMenuOption,3
 je JumpToSummaryFunction
 
 cmp MainMenuOption,4
+je JumpToSetting
+
+cmp MainMenuOption,5
 je JumpToLogout
 
 JumpToMembershipFunction:
@@ -299,6 +326,10 @@ JumpToSummaryFunction:
 call summaryFunction
 jmp backToMainMenu
 
+JumpToSetting:
+call settingFunction
+jmp backToMainMenu
+
 JumpToLogout:
 call summaryFunction
 print logoutMsg1
@@ -308,9 +339,8 @@ int 21h
 
 main endp
 
-
 summaryFunction proc
-call cls
+call videoMode
 print Summarylogo
 print newline
 print SalesReportMsg
@@ -333,7 +363,7 @@ ret
 PaymentReceiptAddingSummaryFunction endp
 MainMenu proc
 mainMenuLabel:
-call cls
+call videoMode
 mov MainMenuOption,0
 print MainMenulogo
 print Main_menu
@@ -358,7 +388,7 @@ endingMainMenu:
 ret
 MainMenu endp
 receipt proc
-call cls
+call videoMode
 print cart_item_line
 print Receiptlogo
 print spacing
@@ -988,7 +1018,7 @@ SSTFUNCTION endp
 hasMembership proc
 ;---------------------------------------------------------------------------------------------------
 paymentLabel:           ;asking has Membership?
-call cls
+call videoMode
 print hasMembershipMsg
 mov ah,01h
 int 21h
@@ -1004,7 +1034,7 @@ je endinghasMembership
 print invalidCharMsg
 print pressAnytoContinue
 call pause
-call cls
+call videoMode
 jmp paymentLabel
 endinghasMembership:
 mov gotMembership,al
@@ -1026,7 +1056,7 @@ je paymentLabel
 print invalidCharMsg
 print pressAnytoContinue
 call pause
-call cls
+call videoMode
 jmp MembershipProceedLabel  
 
 ;--------------------------------------------------------------------------------------------------
@@ -1041,7 +1071,7 @@ je correctMemberIdLabel
 print invalidMemberIdMsg
 print pressAnytoContinue
 call pause
-call cls
+call videoMode
 jmp MembershipProceedLabel
 
 correctMemberIdLabel:       ;IF correct Member Id , assign corresponding letter to a variable and print out the membership level + discount rate
@@ -1227,7 +1257,7 @@ printoutDiscountedTotalFUNCTION proc
 ret
 printoutDiscountedTotalFUNCTION endp
 printoutAllAmount proc
-    call cls
+    call videoMode
     print Paymentlogo
     print headline 
     print newline
@@ -1503,7 +1533,7 @@ login proc
     unssucessful:
     PRINT invalid_ID_password_Msg
     call pause
-    call CLS
+    call videoMode
     jmp username
 
     
@@ -1529,6 +1559,97 @@ login proc
     
     ret
 login endp
+settingFunction proc
+Setting:
+                
+                CALL videoMode
+                print Settinglogo
+                print colorMenu
+                print txtColorPrompt
+                mov ah,01h
+                int 21h
+               
+                cmp al,'1'
+                je Blue
+                cmp al,'2'
+                je Green
+                cmp al,'3'
+                je Cyan
+                cmp al,'4'
+                je White
+                cmp al,'5'
+                je Magenta
+                cmp al,'6'
+                je Brown
+                cmp al,'7'
+                je LightGrey
+                cmp al,'8'
+                je LightBlue
+                cmp al,'X'
+                je endingSettingFunction
+                cmp al,'x'
+                je endingSettingFunction
+            
+                print invalidColorMsg                                                          
+            	mov ah,08h ;system pause
+            	int 21h
+                jmp Setting
+                  
+            setColor:
+                jmp Setting
+                
+            Blue:  
+                mov bh,01h
+                mov inputColor,bh
+                jmp setColor
+                
+            Green:    
+                mov bh,02h
+                mov inputColor,bh
+                jmp setColor
+                
+            Cyan: 
+                mov bh,03h
+                mov inputColor,bh
+                jmp setColor 
+                
+            White:
+                mov bh,0Fh
+                mov inputColor,bh
+                jmp setColor 
+                
+            Magenta: 
+                mov bh,05h
+                mov inputColor,bh
+                jmp setColor
+            
+            Brown: 
+                mov bh,06h
+                mov inputColor,bh
+                jmp setColor 
+                
+            LightGrey:
+                mov bh,08h
+                mov inputColor,bh
+                jmp setColor
+                
+            LightBlue: 
+                mov bh,09h
+                mov inputColor,bh
+                jmp setColor 
+endingSettingFunction:
+ret
+settingFunction endp
+videoMode proc
+    mov ax,0003; al=03 is text Video Mode(act like clear screen Function)
+	int 10h
+	mov ax,0600h	;ah=06(scroll), al=00 (fullscreen)
+    mov bh,inputColor  ;change color
+    mov cx,0000h ;row	
+    mov dx,184Fh ;column	
+    int 10h
+    ret
+videoMode endp
 ; ORDER FUNCTION
 orderFunction proc
     call clearCartItem
@@ -1546,7 +1667,7 @@ orderFunction proc
         loop checkExit
 
     startViewCart:
-        call CLS
+        call videoMode
         call printCartLogo
         call viewItemCart
         call printCartGrandTotal
@@ -1641,7 +1762,7 @@ orderMenu proc
 
     ; print order logo
     printOrderLogo:
-        call CLS
+        call videoMode
         call printItemMenu
         call promptOrder
     ret
@@ -1649,7 +1770,7 @@ orderMenu endp
 
 ; ITEM MENU
 printItemMenu proc
-    call CLS
+    call videoMode
 
     ; order logo
     mov ah, 09h
