@@ -162,8 +162,8 @@ Settinglogo db 10,13,"                         _____      _   _   _"
     	      db 10,13,"                    |  7.          Light Gray               |" 
         	  db 10,13,"                    |  8.          Light Blue               |"
         	  db 10, 13, "        -------------------------------------------------------------" ,"$" 
-    askColorMsg db 10,13,"Enter the color you want to change (x = exit): $"
-    invalidColorMsg db 10,13,"Invalid Color Code! Only enter number (0-8). Press any key to continue... $" 
+    askColorMsg db 10,13,"        Enter the color you want to change (x = exit): $"
+    invalidColorMsg db 10,13,"        Invalid Color Code! Only enter number (0-8).$" 
     
     inputColor db 7; set original color   
 
@@ -1592,7 +1592,8 @@ Setting:
                 cmp al,'x'
                 je endingSettingFunction
             
-                print invalidColorMsg                                                          
+                print invalidColorMsg
+                print pressAnytoContinue                                                          
             	mov ah,08h ;system pause
             	int 21h
                 jmp Setting
@@ -2618,5 +2619,3 @@ CALL DISP
 ret
 printTime endp
 end main
-
-
