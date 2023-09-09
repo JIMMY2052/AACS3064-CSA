@@ -105,6 +105,8 @@ logo db 10,13,"               _____                  _  __   __                _
      db 10,13,"                    | |                        | |"                  
      db 10,13,"                    |_|                        |_|",10,13,'$'   
 
+
+
 Summarylogo db 10,13,"               _____ "                                           
             db 10,13,"              / ____|"                                           
             db 10,13,"             | (___  _   _ _ __ ___  _ __ ___   __ _ _ __ _   _ "
@@ -233,7 +235,7 @@ item5 db "Unisex Sport Socks             $"
 item6 db "Nike Grip Dri-FIT Studio Socks $"
 
 item_price_ringgit dw 29, 39, 55, 49, 27, 45
-item_price_sen dw 00, 00, 00, 00, 00, 00
+item_price_sen dw 00, 00, 00, 00, 00, 55
 
 ; cart item quantity & grand total
 item_selected db ?
@@ -615,6 +617,16 @@ jmp endingstoringAmountWholeNum
 next2:
 call clear
 mov si,AmountPaidtemp
+cmp AmountPaidCount,1
+je itOnly1Decimal
+jmp calculationAmountPaidF
+itOnly1Decimal:
+xor ah,ah
+mov al,[PaidAmount_Arr+si]
+mov bx,10d
+mul bx
+add AmountPaidDecimal12,ax
+jmp endingstoringAmountWholeNum
 calculationAmountPaidF:
 dec AmountPaidCount
 mov cx,AmountPaidCount
