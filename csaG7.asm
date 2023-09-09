@@ -55,7 +55,7 @@ RoundedNettotalMsg db "                    Amount To Pay               = RM $"
 EnterAmount db 10,13,"                    Enter Amount                = RM $"
 insufficentMsg db 10,13,"                    Insufficient Amount Paid !$"
 ChangesMsg db 10,13,"                    Changes                     = RM $"
-RoundingUpMsg db " (Rounded Up)$"
+RoundingUpMsg db " (Rounded)$"
 TotalRoundedUpMsg db "                    Total Rounded               = RM $"
 enterYourOptionMsg db "        Enter Your Option --> $"
 MainMenuOption db ?
@@ -76,8 +76,8 @@ RoundedNetTotalDecimal12 dw 0
 
 SST dw 10
 tempDiscounted dw 0
-grandTotal dw 1568
-grandTotalDecimal12 dw 56
+grandTotal dw 0
+grandTotalDecimal12 dw 0
 grandTotalDecimal34 dw 0
 
 NetTotal dw 0
@@ -1596,53 +1596,50 @@ Setting:
             	mov ah,08h ;system pause
             	int 21h
                 jmp Setting
-                  
-            setColor:
-                jmp Setting
 
             original:
                 mov bh,07h
                 mov inputColor,bh
-                jmp setColor
+                jmp Setting
             Blue:  
                 mov bh,01h
                 mov inputColor,bh
-                jmp setColor
+                jmp Setting
                 
             Green:    
                 mov bh,02h
                 mov inputColor,bh
-                jmp setColor
+                jmp Setting
                 
             Cyan: 
                 mov bh,03h
                 mov inputColor,bh
-                jmp setColor 
+                jmp Setting 
                 
             White:
                 mov bh,0Fh
                 mov inputColor,bh
-                jmp setColor 
+                jmp Setting 
                 
             Magenta: 
                 mov bh,05h
                 mov inputColor,bh
-                jmp setColor
+                jmp Setting
             
             Brown: 
                 mov bh,06h
                 mov inputColor,bh
-                jmp setColor 
+                jmp Setting 
                 
             LightGrey:
                 mov bh,08h
                 mov inputColor,bh
-                jmp setColor
+                jmp Setting
                 
             LightBlue: 
                 mov bh,09h
                 mov inputColor,bh
-                jmp setColor 
+                jmp Setting 
 endingSettingFunction:
 ret
 settingFunction endp
