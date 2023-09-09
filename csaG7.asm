@@ -59,7 +59,7 @@ RoundingUpMsg db " (Rounded Up)$"
 TotalRoundedUpMsg db "                    Total Rounded               = RM $"
 enterYourOptionMsg db "        Enter Your Option --> $"
 MainMenuOption db ?
-ErrorOptionMsg db "        Please enter a valid number (1 - 4).$"
+ErrorOptionMsg db "        Please enter a valid number (1 - 5).$"
 
 numOfSale dw 0
 totalSalesWholeNum dw 0
@@ -151,7 +151,8 @@ Settinglogo db 10,13,"                         _____      _   _   _"
              db 10,13,"                       |_____/ \___|\__|\__|_|_| |_|\__, |"
              db 10,13,"                                                     __/ |"
              db 10,13,"                                                    |___/" ,"$"
-    colorMenu db 10, 13, "        -------------------------------------------------------------"    
+    colorMenu db 10, 13, "        -------------------------------------------------------------"
+              db 10,13,"                    |  0.          Original                 |"     
               db 10,13,"                    |  1.          Blue                     |" 
               db 10,13,"                    |  2.          Green                    |" 
     	      db 10,13,"                    |  3.          Cyan                     |" 
@@ -375,7 +376,7 @@ sub al,30h
 mov MainMenuOption,al
 cmp al,1
 jl ErrorOption
-cmp al,4
+cmp al,5
 jg ErrorOption
 jmp endingMainMenu
 ErrorOption:
@@ -1568,7 +1569,8 @@ Setting:
                 print txtColorPrompt
                 mov ah,01h
                 int 21h
-               
+                cmp al,'0'
+                je original
                 cmp al,'1'
                 je Blue
                 cmp al,'2'
@@ -1597,7 +1599,11 @@ Setting:
                   
             setColor:
                 jmp Setting
-                
+
+            original:
+                mov bh,07h
+                mov inputColor,bh
+                jmp setColor
             Blue:  
                 mov bh,01h
                 mov inputColor,bh
