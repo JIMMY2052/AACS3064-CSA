@@ -162,8 +162,8 @@ Settinglogo db 10,13,"                         _____      _   _   _"
     	      db 10,13,"                    |  7.          Light Gray               |" 
         	  db 10,13,"                    |  8.          Light Blue               |"
         	  db 10, 13, "        -------------------------------------------------------------" ,"$" 
-    txtColorPrompt db 10,13,"Enter the color you want to change (x = exit): $"
-    invalidColorMsg db 10,13,"Invalid Color Code! Please re-enter. Press any key to continue... $" 
+    askColorMsg db 10,13,"Enter the color you want to change (x = exit): $"
+    invalidColorMsg db 10,13,"Invalid Color Code! Only enter number (0-8). Press any key to continue... $" 
     
     inputColor db 7; set original color   
 
@@ -1566,7 +1566,7 @@ Setting:
                 CALL videoMode
                 print Settinglogo
                 print colorMenu
-                print txtColorPrompt
+                print askColorMsg
                 mov ah,01h
                 int 21h
                 cmp al,'0'
@@ -1649,7 +1649,7 @@ settingFunction endp
 videoMode proc
     mov ax,0003; al=03 is text Video Mode(act like clear screen Function)
 	int 10h
-	mov ax,0600h	;ah=06(scroll), al=00 (fullscreen)
+	mov ax,0600h	;al=00 (fullscreen)
     mov bh,inputColor  ;change color
     mov cx,0000h ;row	
     mov dx,184Fh ;column	
