@@ -37,7 +37,7 @@ GoldMsg db 10,13,"     This customer is Gold Membership.  Customer can enjoy 15%
 isDot dw 0
 ErrorFound dw 0
 tempChar db ?
-InvalidAmountPaidMsg db 10,13,"                    Only Accept number (1~9) and dot (.) $"
+InvalidAmountPaidMsg db 10,13,"                    Only Accept number (1~9) and a dot (.) $"
 InvalidAmountPaidMsg2 db 10,13,"                    Cannot left it blank !$"
 AmountPaidCount dw ?
 AmountPaidtemp dw ?
