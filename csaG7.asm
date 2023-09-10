@@ -260,7 +260,7 @@ item5 db "Unisex Sport Socks             $"
 item6 db "Nike Grip Dri-FIT Studio Socks $"
 
 item_price_ringgit dw 29, 39, 55, 49, 27, 45
-item_price_sen dw 00, 00, 00, 00, 00, 55
+item_price_sen dw 00, 00, 00, 00, 00, 00
 
 ; cart item quantity & grand total
 item_selected db ?
@@ -289,8 +289,8 @@ countMenuItem dw 6
 ; total number of orders
 num_of_order db 0
 SalesReportMsg db "                            SportXpert Sales Report", 10, 13, "$"
-logoutMsg3 db 10,13,10,13,10,13,"Do you really want to logout the system ?(y = yes or n = no) > $"
-logoutInvalidCharMsg db 10,13,"Invalid Character. Please enter (y = yes or n = no) only! $"
+logoutMsg3 db 10,13,10,13,10,13,"      Do you really want to logout the system? (y = yes or n = no) > $"
+logoutInvalidCharMsg db 10,13,"      Invalid Character. Please enter (y = yes or n = no) only! $"
 logoutVar db ?
 .code
 main proc
