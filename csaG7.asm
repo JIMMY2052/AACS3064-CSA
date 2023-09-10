@@ -26,7 +26,7 @@ memberid_Arr2 db 50 dup ('$')
 hasMembershipMsg db 10,13,"            Do customer has a membership (y = yes , n = no): $"
 invalidCharMsg db 10,13,"            Please enter a valid character (y = yes , n = no).",'$'
 pressAnytoContinue db 10,13,"                       Press any key to continue...$"
-ReadMemberIDMsg db 10,13,10,13,"                        Enter Member ID : $"
+ReadMemberIDMsg db 10,13,10,13,"             Enter Member ID ( 1 character followed by 2 digit): $"
 correctMemberId db 0
 RM db "RM$"
 gotMembership db ?
@@ -292,6 +292,8 @@ SalesReportMsg db "                            SportXpert Sales Report", 10, 13,
 logoutMsg3 db 10,13,10,13,10,13,"Do you really want to logout the system ?(y = yes or n = no) > $"
 logoutInvalidCharMsg db 10,13,"Invalid Character. Please enter (y = yes or n = no) only! $"
 logoutVar db ?
+digitPlaces  db ?
+nettotalDigitplaces db ?
 .code
 main proc
 mov ax,@data
@@ -347,7 +349,51 @@ mov ah,4ch
 int 21h
 
 main endp
+printingSpacingFunction proc
+mov al,nettotalDigitplaces
+sub al,digitPlaces
+checkprintSpacing:
+cmp al,0
+jg printSpacing
+jmp endingprintingSpacing
+printSpacing:
+mov ah,02H
+mov dl,' '
+int 21h
+dec al
+jmp checkprintSpacing
+endingprintingSpacing:
+ret
+printingSpacingFunction endp
+compareDigitToPrintSpace proc
+cmp ax,10000
+jge digitplaces5
+cmp ax,1000
+jge digitplaces4
+cmp ax,100
+jge digitplaces3
+cmp ax,10
+jge digitplaces2
+jmp digitplaces1
 
+digitplaces5:
+mov digitPlaces,5
+jmp endingcompareDigitToPrintSpace
+digitplaces4:
+mov digitPlaces,4
+jmp endingcompareDigitToPrintSpace
+digitplaces3:
+mov digitPlaces,3
+jmp endingcompareDigitToPrintSpace
+digitplaces2:
+mov digitPlaces,2
+jmp endingcompareDigitToPrintSpace
+digitplaces1:
+mov digitPlaces,1
+
+endingcompareDigitToPrintSpace:
+ret
+compareDigitToPrintSpace endp
 AreYouSureLogout proc
 askingLogout:
 call videoMode
@@ -766,6 +812,10 @@ mov NetTotalDecimal12,ax
 CalulateNetTotal:
 call SSTFUNCTION
 call NetTotalFUCTION
+mov ax,NetTotal
+call compareDigitToPrintSpace
+mov al,digitPlaces
+mov nettotalDigitplaces,al
 call RoundUpFUNCTION
 
 ret
@@ -796,6 +846,9 @@ ret
 printRoundedTotal endp
 printoutSSTFUNCTION proc
 call clear
+mov ax,SSTGrandTotal
+call compareDigitToPrintSpace
+call printingSpacingFunction
 mov ax,SSTGrandTotal
 call converter
 mov ah,02h
@@ -832,6 +885,9 @@ ret
 printoutSSTFUNCTION endp
 printoutGrandTotalFUNCTION proc
 call clear
+mov ax,grandTotal
+call compareDigitToPrintSpace
+call printingSpacingFunction
 mov ax,grandTotal
 call converter
 mov ah,02h
@@ -2545,7 +2601,6 @@ a: xor     dx,dx
     test    ax,ax          
     jnz     a             
     
-
 b:  pop     dx             
     mov     ah,02h         
     add     dl,30h      
