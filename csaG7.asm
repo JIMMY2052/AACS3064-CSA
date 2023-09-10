@@ -2545,7 +2545,6 @@ a: xor     dx,dx
     test    ax,ax          
     jnz     a             
     
-
 b:  pop     dx             
     mov     ah,02h         
     add     dl,30h      
