@@ -134,10 +134,10 @@ goldAgeCount dw 0
 displayOrder db 0
 nameListCount db 0
 
-beforeId dw 10, 13, "         |  $"
-afterId dw "        |  $" 
-afterName dw "  |  $"
-afterAge dw "          |$"
+beforeId db 10, 13, "         |  $"
+afterId db "        |  $" 
+afterName db "  |  $"
+afterAge db "          |$"
 bronzeIdLoop dw 0
 silverIdLoop dw 0
 goldIdLoop dw 0 
