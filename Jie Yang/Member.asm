@@ -138,6 +138,17 @@ beforeId dw 10, 13, "         |  $"
 afterId dw "        |  $" 
 afterName dw "  |  $"
 afterAge dw "          |$"
+bronzeIdLoop dw 0
+silverIdLoop dw 0
+goldIdLoop dw 0 
+
+bronzeNameLoop dw 0
+silverNameLoop dw 0
+goldNameLoop dw 0 
+
+bronzeAgeLoop dw 0
+silverAgeLoop dw 0
+goldAgeLoop dw 0
 
 .code
 main proc
@@ -708,11 +719,15 @@ DisplayBronzeList proc
     mov ax, bronzeStringArrayCount
     mov bl, 2
     div bl
-    cmp ax, 0
+    inc ax 
+    mov bronzeIdLoop ,ax
+    
+    bl1:
+    mov ax,bronzeIdLoop
+    cmp ax, 1
     je DisplaySilverList
     mov cx, ax
-    
-    bl1: 
+     
     print beforeId
     mov dx, bronzeStringArray[si]
     mov ah, 09h
@@ -720,41 +735,46 @@ DisplayBronzeList proc
     mov ah, 09h
     lea dx, afterId
     int 21h
-    inc si
+    add si, 2
     
-    mov di, 0
+    mov di, bronzeNameLoop
     mov cx, 10
     bl2:
     mov ah, 02h
     mov dl, bronzeNameArray[di]
     int 21h
     inc di
+    inc bronzeNameLoop
     loop bl2
     
+    inc bronzeNameLoop
     inc di
     
     mov ah, 09h
     lea dx, afterName
     int 21h
     
-    mov di, 0
+    mov di, bronzeAgeLoop
     mov cx, 2
     bl3:
     mov ah, 02h
     mov dl, bronzeAgeArray[di]
     int 21h
     inc di
+    inc bronzeAgeLoop
     loop bl3
     
+    inc bronzeAgeLoop
     mov ah, 09h
     lea dx, afterAge
     int 21h 
     
-    mov ax, bronzeStringArrayCount
-    mov bl, 2
-    div bl
-    mov cx, ax
-    loop bl1  
+    dec bronzeIdLoop
+    mov cx, bronzeIdLoop
+    loop bl1
+    
+    mov bronzeNameLoop, 0
+    mov bronzeAgeLoop, 0  
     
     ret
     DisplayBronzeList endp
@@ -764,11 +784,15 @@ DisplaySilverList proc
     mov ax, silverStringArrayCount
     mov bl, 2
     div bl
-    cmp ax, 0
-    je DisplayGoldList
-    mov cx, ax
+    inc ax 
+    mov silverIdLoop ,ax
     
     sl1:
+    mov ax,silverIdLoop
+    cmp ax, 1
+    je DisplayGoldList
+    mov cx, ax
+     
     print beforeId
     mov dx, silverStringArray[si]
     mov ah, 09h
@@ -776,41 +800,46 @@ DisplaySilverList proc
     mov ah, 09h
     lea dx, afterId
     int 21h
-    inc si
+    add si, 2
     
-    mov di, 0
+    mov di, silverNameLoop
     mov cx, 10
     sl2:
     mov ah, 02h
     mov dl, silverNameArray[di]
     int 21h
     inc di
+    inc silverNameLoop
     loop sl2
     
+    inc silverNameLoop
     inc di
     
     mov ah, 09h
     lea dx, afterName
     int 21h
     
-    mov di, 0
+    mov di, silverAgeLoop
     mov cx, 2
     sl3:
     mov ah, 02h
     mov dl, silverAgeArray[di]
     int 21h
     inc di
+    inc silverAgeLoop
     loop sl3
     
+    inc silverAgeLoop
     mov ah, 09h
     lea dx, afterAge
     int 21h 
     
-    mov ax, silverStringArrayCount
-    mov bl, 2
-    div bl
-    mov cx, ax
-    loop sl1  
+    dec silverIdLoop
+    mov cx, silverIdLoop
+    loop sl1
+    
+    mov silverNameLoop, 0
+    mov silverAgeLoop, 0  
     
     ret
     DisplaySilverList endp
@@ -820,53 +849,62 @@ DisplayGoldList proc
     mov ax, goldStringArrayCount
     mov bl, 2
     div bl
-    cmp ax, 0
+    inc ax 
+    mov goldIdLoop ,ax
+    
+    gl1:
+    mov ax,goldIdLoop
+    cmp ax, 1
     je PressAnyToContinue
     mov cx, ax
-    
-    gl1: 
-    print beforeId  
+     
+    print beforeId
     mov dx, goldStringArray[si]
     mov ah, 09h
     int 21h
     mov ah, 09h
     lea dx, afterId
     int 21h
-    inc si
+    add si, 2
     
-    mov di, 0
+    mov di, goldNameLoop
     mov cx, 10
     gl2:
     mov ah, 02h
     mov dl, goldNameArray[di]
     int 21h
     inc di
+    inc goldNameLoop
     loop gl2
     
+    inc goldNameLoop
     inc di
     
     mov ah, 09h
     lea dx, afterName
     int 21h
     
-    mov di, 0
+    mov di, goldAgeLoop
     mov cx, 2
     gl3:
     mov ah, 02h
     mov dl, goldAgeArray[di]
     int 21h
     inc di
+    inc goldAgeLoop
     loop gl3
     
+    inc goldAgeLoop
     mov ah, 09h
     lea dx, afterAge
     int 21h 
     
-    mov ax, goldStringArrayCount
-    mov bl, 2
-    div bl
-    mov cx, ax
-    loop gl1  
+    dec goldIdLoop
+    mov cx, goldIdLoop
+    loop gl1
+    
+    mov goldNameLoop, 0
+    mov goldAgeLoop, 0   
     
     call PressAnyToContinue
     
