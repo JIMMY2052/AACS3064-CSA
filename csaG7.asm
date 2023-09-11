@@ -964,6 +964,7 @@ mov ax,Decimal12Discounted
 mov bx,MembershipRate
 mul bx
 cmp ax,100
+mov Decimal12Discounted,ax
 jge increaseDicountedGrandTotal
 jmp NoincreaseDicountedGrandTotal
 increaseDicountedGrandTotal:
