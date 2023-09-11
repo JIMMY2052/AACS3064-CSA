@@ -821,7 +821,7 @@ DisplayGoldList proc
     mov bl, 2
     div bl
     cmp ax, 0
-    je PressAnyToContinue
+    je PressAnyToContinueFunction
     mov cx, ax
     
     gl1: 
@@ -868,12 +868,12 @@ DisplayGoldList proc
     mov cx, ax
     loop gl1  
     
-    call PressAnyToContinue
+    call PressAnyToContinueFunction
     
     ret
     DisplayGoldList endp
 
-PressAnyToContinue proc
+PressAnyToContinueFunction proc
     print memberListEnd
     print newline
     print continue
@@ -882,7 +882,7 @@ PressAnyToContinue proc
     call Member
     
     ret
-    PressAnyToContinue endp
+    PressAnyToContinueFunction endp
 
 ClearScreen proc
     mov ah, 00
