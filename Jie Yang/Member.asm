@@ -30,23 +30,23 @@ registerMbrMenu db 10, 13, "          ------------------------------------------
                 db 10, 13, "          |                                                    |"
                 db 10, 13, "          ------------------------------------------------------$"
                    
-bronzeMenu db 10, 13, "          ---------------------------------------------"
-           db 10, 13, "          |                                           |"
-           db 10, 13, "          |        Bronze Member (5% discount)        |"
-           db 10, 13, "          |                                           |"
-           db 10, 13, "          ---------------------------------------------", 10, 13, "$"
+bronzeMenu db 10, 13, "           ---------------------------------------------"
+           db 10, 13, "           |                                           |"
+           db 10, 13, "           |        Bronze Member (5% discount)        |"
+           db 10, 13, "           |                                           |"
+           db 10, 13, "           ---------------------------------------------", 10, 13, "$"
                   
-silverMenu db 10, 13, "          ----------------------------------------------"
-           db 10, 13, "          |                                            |"
-           db 10, 13, "          |        Silver Member (10% discount)        |"
-           db 10, 13, "          |                                            |"
-           db 10, 13, "          ----------------------------------------------", 10, 13, "$"
+silverMenu db 10, 13, "           ----------------------------------------------"
+           db 10, 13, "           |                                            |"
+           db 10, 13, "           |        Silver Member (10% discount)        |"
+           db 10, 13, "           |                                            |"
+           db 10, 13, "           ----------------------------------------------", 10, 13, "$"
                   
-goldMenu db 10, 13, "          -------------------------------------------"
-         db 10, 13, "          |                                         |"
-         db 10, 13, "          |       Gold Member (15% discount)        |"
-         db 10, 13, "          |                                         |"
-         db 10, 13, "          -------------------------------------------", 10, 13, "$"
+goldMenu db 10, 13, "           -------------------------------------------"
+         db 10, 13, "           |                                         |"
+         db 10, 13, "           |       Gold Member (15% discount)        |"
+         db 10, 13, "           |                                         |"
+         db 10, 13, "           -------------------------------------------", 10, 13, "$"
                                                                                
 memberList db 10, 13, "          ---------------------------------------------"
            db 10, 13, "          |                  Member                   |"
@@ -58,7 +58,7 @@ memberList db 10, 13, "          ---------------------------------------------"
 memberListEnd db 10, 13, "          |             |              |              |"
               db 10, 13, "          ---------------------------------------------$"
          
-mbrOpt db 10, 13, "Enter an option: $"
+mbrOpt db 10, 13, "                   Enter an option: $"
 
 mbrName label byte
 mbrNameMax db 50
@@ -74,19 +74,19 @@ mbrAgeArray db 50 dup("$")
 
 mbrIdCharacterArray db 60 dup('$');    <-------------------array at here
 
-mbrOptErrorMsg db 10, 13, "Please input a effective number!$"
-nameErrorMsg db 10, 13, "Please input your username exactly 10 characters!$"
-emptyNameErrorMsg db 10, 13, "Please input a username!$"
-ageErrorMsg db 10, 13, "Your input is not valid in age to register member!$"
-emptyAgeErrorMsg db 10, 13, "Please input your age!$"
-confirmationErrorMsg db 10, 13, "Please input a valid character!$"
+mbrOptErrorMsg db 10, 13, "          Please input a effective number!$"
+nameErrorMsg db 10, 13, "          Please input your username exactly 10 characters!$"
+emptyNameErrorMsg db 10, 13, "          Please input a username!$"
+ageErrorMsg db 10, 13, "          Your input is not valid in age to register member!$"
+emptyAgeErrorMsg db 10, 13, "          Please input your age!$"
+confirmationErrorMsg db 10, 13, "          Please input a valid character!$"
 
-enterMbrName db 10, 13, "Enter your username in 10 characters (x = exit): $"
-enterMbrAge db 10, 13, "Enter your age (x = exit) (18 - 99): $"
-displayMbrId db 10, 13, "This is your member id: $"
-addMbrConfirmation db 10, 13, "Confirm to add member (Y/y = yes) (N/n = no)? $"
-addMbrSuccessful db 10, 13, "Your member have added successfully"
-continue db 10, 13, "Press any key to continue...$"
+enterMbrName db 10, 13, "          Enter your username in 10 characters (x = exit): $"
+enterMbrAge db 10, 13, "          Enter your age (x = exit) (18 - 99): $"
+displayMbrId db 10, 13, "          This is your member id: $"
+addMbrConfirmation db 10, 13, "          Confirm to add member (Y/y = yes) (N/n = no)? $"
+addMbrSuccessful db 10, 13, "          Your member have added successfully"
+continue db 10, 13, "          Press any key to continue...$"
 
 tempMbrType db 0 
 mbrIdCount dw 0
