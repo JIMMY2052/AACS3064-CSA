@@ -30,23 +30,23 @@ registerMbrMenu db 10, 13, "          ------------------------------------------
                 db 10, 13, "          |                                                    |"
                 db 10, 13, "          ------------------------------------------------------$"
                    
-bronzeMenu db 10, 13, "          --------------------------------------------------------"
-           db 10, 13, "          |                                                      |"
-           db 10, 13, "          |        Bronze Member (e.g. B01) (5% discount)        |"
-           db 10, 13, "          |                                                      |"
-           db 10, 13, "          --------------------------------------------------------", 10, 13, "$"
+bronzeMenu db 10, 13, "          ---------------------------------------------"
+           db 10, 13, "          |                                           |"
+           db 10, 13, "          |        Bronze Member (5% discount)        |"
+           db 10, 13, "          |                                           |"
+           db 10, 13, "          ---------------------------------------------", 10, 13, "$"
                   
-silverMenu db 10, 13, "          ---------------------------------------------------------"
-           db 10, 13, "          |                                                       |"
-           db 10, 13, "          |        Silver Member (e.g. S01) (10% discount)        |"
-           db 10, 13, "          |                                                       |"
-           db 10, 13, "          ---------------------------------------------------------", 10, 13, "$"
+silverMenu db 10, 13, "          ----------------------------------------------"
+           db 10, 13, "          |                                            |"
+           db 10, 13, "          |        Silver Member (10% discount)        |"
+           db 10, 13, "          |                                            |"
+           db 10, 13, "          ----------------------------------------------", 10, 13, "$"
                   
-goldMenu db 10, 13, "          ------------------------------------------------------"
-         db 10, 13, "          |                                                    |"
-         db 10, 13, "          |       Gold Member (e.g. G01) (15% discount)        |"
-         db 10, 13, "          |                                                    |"
-         db 10, 13, "          ------------------------------------------------------", 10, 13, "$"
+goldMenu db 10, 13, "          -------------------------------------------"
+         db 10, 13, "          |                                         |"
+         db 10, 13, "          |       Gold Member (15% discount)        |"
+         db 10, 13, "          |                                         |"
+         db 10, 13, "          -------------------------------------------", 10, 13, "$"
                                                                                
 memberList db 10, 13, "          ---------------------------------------------"
            db 10, 13, "          |                  Member                   |"
@@ -134,7 +134,7 @@ goldAgeCount dw 0
 displayOrder db 0
 nameListCount db 0
 
-beforeId db 10, 13, "         |  $"
+beforeId db 10, 13, "          |  $"
 afterId db "        |  $" 
 afterName db "  |  $"
 afterAge db "          |$"
@@ -633,7 +633,7 @@ StoreSilver proc
     
     mov al, ','
     mov silverAgeArray[di], al
-    inc silverAgeArray 
+    inc silverAgeCount 
     
     print addMbrSuccessful
     call Pause
@@ -693,7 +693,7 @@ StoreGold proc
     
     mov al, ','
     mov goldAgeArray[di], al
-    inc goldAgeArray
+    inc goldAgeCount
     
     print addMbrSuccessful
     call Pause
