@@ -500,6 +500,12 @@ jge roundingUp
 jmp endingRoundUP
 roundingUp:
 inc RoundedNetTotalDecimal12
+mov ax,RoundedNetTotalDecimal12
+cmp ax,100
+jl endingRoundUP
+sub ax,100
+mov RoundedNetTotalDecimal12,ax
+inc RoundedNetTotal
 endingRoundUP:
 ret
 RoundUpFUNCTION endp
@@ -1116,24 +1122,24 @@ correctMemberIdLabel:       ;IF correct Member Id , assign corresponding letter 
 mov si,0
 mov al,[input_member_Arr + si]
 cmp al,'B'
-je Bronze
+je BronzeJimmy
 cmp al,'S'
-je Silver
+je SilverJimmy
 cmp al,'G'
-je Gold
-Bronze:
+je GoldJimmy
+BronzeJimmy:
  mov MembershipRate,5
 print BronzeMsg
 print pressAnytoContinue
 call pause
  jmp exitMembership
- Silver:
+ SilverJimmy:
  mov MembershipRate,10
  print SilverMsg
 print pressAnytoContinue
 call pause
  jmp exitMembership
- Gold:
+ GoldJimmy:
  mov MembershipRate,15
  print GoldMsg
  print pressAnytoContinue
