@@ -88,7 +88,6 @@ displayMbrId db 10, 13, "          This is your member id: $"
 addMbrConfirmation db 10, 13, "          Confirm to add member (Y/y = yes) (N/n = no)? $"
 addMbrSuccessful db 10, 13, "          Your member have added successfully"
 continue db 10, 13, "                 Press any key to continue...$"
-return db 10, 13, "          Press any key back to member menu...$"
 
 tempMbrType db 0 
 mbrIdCount dw 0
@@ -213,32 +212,369 @@ loadArray proc;
     
     ret
     LoadArray endp
+
+Member proc
+    call ClearScreen
+    print memberMenu
+    print mbrOpt
+        
+    mov ah, 01h
+    int 21h 
+    
+    cmp al, 31h
+    je JmpToRegisterMember    
+    cmp al, 32h
+    je JmpToDisplayMember  
+    cmp al, 33h
+    je Exit
+    call MemberErrorMessage
+    
+    JmpToRegisterMember:
+    call RegisterMember
+    jmp Member
+    JmpToDisplayMember:
+    call DisplayMember
+    jmp Member
+    
+    MemberErrorMessage:
+    print mbrOptErrorMsg
+    call Pause 
+    jmp Member
+
+    EndMember:
+    Exit:
+    mov ax, 4c00h
+    int 21h  
+    ret
+    Member endp 
+
+RegisterMember proc
+    call ClearScreen
+    print registerMbrMenu
+    print mbrOpt
+        
+    mov ah, 01h
+    int 21h
+    mov tempMbrType, al   ;<----- store either 1, 2 or 3 for member id auto generate according with the option selected   
+    
+    cmp al, 31h
+    je JmpToBronze1
+    cmp al, 32h
+    je JmpToSilver1
+    cmp al, 33h
+    je JmpToGold1
+    cmp al, 34h
+    je JmpToMember          
+    jmp RegisterMemberErrorMessage    
+    
+    JmpToBronze1:
+    call Bronze
+    jmp RegisterMember
+    JmpToSilver1:
+    call Silver 
+    jmp RegisterMember
+    JmpToGold1:
+    call Gold
+    jmp RegisterMember
+    
+    RegisterMemberErrorMessage:
+    print newline
+    print mbrOptErrorMsg
+    call Pause 
+    jmp RegisterMember
+    
+    JmpToMember: 
+    ret
+    RegisterMember endp
+
+DisplayMember proc
+    call ClearScreen
+    print memberList    
+    call DisplayBronzeList
+    ret
+    DisplayMember endp 
+
+Bronze proc
+    call ClearScreen
+    print bronzeMenu    
+    cmp bronzeCount, 06h
+    je JmpToBronzeFull    
+    call MemberName
+    jmp EndBronze
+    
+    JmpToBronzeFull:
+    call MemberFull
+    jmp EndBronze
+    
+    EndBronze:
+    ret
+    Bronze endp 
+
+Silver proc
+    call ClearScreen
+    print silverMenu    
+    cmp silverCount, 06h
+    je JmpToSilverFull    
+    call MemberName
+    jmp EndSilver
+    
+    JmpToSilverFull: 
+    call MemberFull
+    jmp EndSilver
+    
+    EndSilver:
+    ret
+    Silver endp
+
+Gold proc
+    call ClearScreen
+    print goldMenu    
+    cmp goldCount, 06h
+    je JmpToGoldFull    
+    call MemberName
+    jmp EndGold
+    
+    JmpToGoldFull: 
+    call MemberFull
+    jmp EndGold
+    
+    EndGold:
+    ret
+    Gold endp
+
+MemberFull proc
+    print mbrFull
+    call Pause
+    
+    ret
+    MemberFull endp
+
+MemberName proc
+    print newline
+    print enterMbrName
+        
+    mov ah, 0ah
+    lea dx, mbrName
+    int 21h 
+       
+    cmp nameAct, 0
+    je EmptyNameErrorMessage
+    cmp nameAct, 1
+    je NameCheckX
+    cmp nameAct, 10
+    je JmpToMemberAge
+    jmp JmpToNameErrorMessage
+    
+    EmptyNameErrorMessage:
+    print emptyNameErrorMsg
+    call Pause
+    jmp CheckMemberType
+          
+    NameCheckX:
+    mov si, 0        
+    cmp mbrNameArray[si], 'x'
+    je EndMemberName
+    cmp mbrNameArray[si], 'X'
+    je EndMemberName       
+    jmp JmpToNameErrorMessage
+    
+    JmpToMemberAge:
+    call MemberAge
+    jmp EndMemberName
+    
+    JmpToNameErrorMessage:
+    print nameErrorMsg
+    call Pause            
+    jmp CheckMemberType
+    
+    CheckMemberType:
+    cmp tempMbrType, 31h
+    je JmpToBronze2
+    cmp tempMbrType, 32h
+    je JmpToSilver2
+    cmp tempMbrType, 33h
+    je JmpToGold2
+    
+    JmpToBronze2:
+    call Bronze
+    jmp EndMemberName
+    JmpToSilver2:
+    call Silver
+    jmp EndMemberName
+    JmpToGold2:
+    call Gold
+    jmp EndMemberName     
+    
+    EndMemberName:
+    ret
+    MemberName endp
+
+MemberAge proc
+    print enterMbrAge
+        
+    mov ah, 0ah
+    lea dx, mbrAge
+    int 21h
+        
+    cmp ageAct, 0
+    je JmpToEmptyAgeErrorMessage
+    cmp ageAct, 1
+    je AgeCheckX
+    cmp ageAct, 2
+    je JmpToCheckAge   
+    jmp JmpToAgeErrorMessage1
+    
+    JmpToEmptyAgeErrorMessage:
+    print emptyAgeErrorMsg
+    call Pause
+    jmp MemberAge
+    
+    AgeCheckX:
+    mov si, 0
+    cmp mbrAgeArray[si], 'x'
+    je EndMemberAge
+    cmp mbrAgeArray[si], 'X'
+    je EndMemberAge        
+    jmp JmpToAgeErrorMessage1 
+    
+    JmpToCheckAge:
+    call CheckAge
+    jmp EndMemberAge
+    
+    JmpToAgeErrorMessage1:
+    print ageErrorMsg
+    call Pause
+    call MemberAge
+    jmp EndMemberAge
+    
+    EndMemberAge:    
+    ret
+    MemberAge endp
+
+CheckAge proc
+    mov si, 0
+    cmp mbrAgeArray[si], 30h
+    jle JmpToAgeErrorMessage2
+    cmp mbrAgeArray[si], 31h
+    je Check8and9
+    cmp mbrAgeArray[si], 39h
+    jg JmpToAgeErrorMessage2
+    inc si
+    cmp mbrAgeArray[si], 30h
+    jl JmpToAgeErrorMessage2
+    cmp mbrAgeArray[si], 39h
+    jg JmpToAgeErrorMessage2    
+    jmp JmpToFindMemberId 
+    
+    Check8and9:
+    mov di, 1
+    cmp mbrAgeArray[di], 38h
+    je JmpToFindMemberId
+    cmp mbrAgeArray[di], 39h
+    je JmpToFindMemberId    
+    jmp JmpToAgeErrorMessage2
+    
+    JmpToAgeErrorMessage2:
+    print ageErrorMsg
+    call Pause
+    call MemberAge
+    jmp EndCheckAge
+    
+    JmpToFindMemberId:
+    call FindMemberId
+    jmp EndCheckAge
+        
+    EndCheckAge:
+    ret
+    CheckAge endp
+
+FindMemberId proc        
+    cmp tempMbrType, 31h
+    je DisplayBronze
+    cmp tempMbrType, 32h
+    je DisplaySilver
+    cmp tempMbrType, 33h
+    je DisplayGold
+    
+    DisplayBronze:
+    print displayMbrId
+    mov si, bronzeStringArrayCount    
+    mov ah, 09h
+    mov dx, bronzeStringArray[si]
+    int 21h
+    call Pause
+    call ConfirmAddMember
+    jmp EndFindMemberId
+    
+    DisplaySilver: 
+    print displayMbrId
+    mov si, silverStringArrayCount    
+    mov ah, 09h
+    mov dx, silverStringArray[si]
+    int 21h
+    call Pause
+    call ConfirmAddMember
+    jmp EndFindMemberId 
+    
+    DisplayGold:
+    print displayMbrId
+    mov si, goldStringArrayCount    
+    mov ah, 09h
+    mov dx, goldStringArray[si]
+    int 21h
+    call Pause
+    call ConfirmAddMember
+    jmp EndFindMemberId
+    
+    EndFindMemberId:
+    ret
+    FindMemberId endp
+
 ConfirmAddMember proc
     print newline
-    print addMbrConfirmation    
+    print addMbrConfirmation
+        
     mov ah, 01h
-    int 21h    
+    int 21h  
+      
     cmp al, 'y'
     je StoreMember
     cmp al, 'Y'
     je StoreMember
     cmp al, 'n'
-    je PressAnyToReturn
+    je EndConfirmAddMember
     cmp al, 'N'
-    je PressAnyToReturn    
+    je EndConfirmAddMember   
     call AddMemberErrorMessage
+    
     StoreMember:
     cmp tempMbrType, 31h
-    je StoreBronzeId
+    je JmpToStoreBronzeId
     cmp tempMbrType, 32h
-    je StoreSilverId
+    je JmpToStoreSilverId
     cmp tempMbrType, 33h
-    je StoreGoldId
-    PressAnyToReturn:
-    print return
-    call Pause
-    call Member
-    StoreBronzeId:        
+    je JmpToStoreGoldId
+    
+    JmpToStoreBronzeId:
+    call StoreBronzeId
+    jmp EndConfirmAddMember
+    JmpToStoreSilverId:
+    call StoreSilverId
+    jmp EndConfirmAddMember
+    JmpToStoreGoldId:
+    call StoreGoldId
+    jmp EndConfirmAddMember
+    
+    AddMemberErrorMessage:
+    print confirmationErrorMsg
+    call Pause    
+    jmp ConfirmAddMember       
+    
+    EndConfirmAddMember: 
+    ret
+    ConfirmAddMember endp
+
+StoreBronzeId proc        
     mov si, mbrIdCount 
     mov al, 'B'
     mov mbrIdCharacterArray[si], al
@@ -257,7 +593,53 @@ ConfirmAddMember proc
     inc mbrIdCount
     add bronzeStringArrayCount, 2
     call StoreBronzeName
-    StoreSilverId:
+    
+    ret
+    StoreBronzeId endp
+
+StoreBronzeName proc            
+    mov si, 0      
+    mov cx, 10
+    mov di, bronzeNameCount
+    
+    b1:
+    mov al, mbrNameArray[si]
+    mov bronzeNameArray[di], al
+    inc si
+    inc di
+    inc bronzeNameCount
+    loop b1
+        
+    mov al, ','
+    mov bronzeNameArray[di], al
+    inc bronzeNameCount
+    call StoreBronzeAge
+    
+    ret
+    StoreBronzeName endp
+
+StoreBronzeAge proc   
+    mov si, 0
+    mov cx, 2
+    mov di, bronzeAgeCount
+    
+    b2:
+    mov al, mbrAgeArray[si]
+    mov bronzeAgeArray[di], al
+    inc si
+    inc di
+    inc bronzeAgeCount
+    loop b2    
+    
+    mov al, ','
+    mov bronzeAgeArray[di], al
+    inc bronzeAgeCount    
+    print addMbrSuccessful
+    call Pause    
+    ret
+    StoreBronzeAge endp
+
+StoreSilverId proc
     mov si, mbrIdCount 
     mov al, 'S'
     mov mbrIdCharacterArray[si], al
@@ -276,7 +658,53 @@ ConfirmAddMember proc
     inc mbrIdCount
     add silverStringArrayCount, 2
     call StoreSilverName
-    StoreGoldId :   
+    
+    ret
+    StoreSilverId endp
+
+StoreSilverName proc    
+    mov si, 0      
+    mov cx, 10
+    mov di, silverNameCount 
+    
+    s1:
+    mov al, mbrNameArray[si]
+    mov silverNameArray[di], al
+    inc si
+    inc di
+    inc silverNameCount
+    loop s1      
+    
+    mov al, ','
+    mov silverNameArray[di], al
+    inc silverNameCount
+    call StoreSilverAge  
+    
+    ret
+    StoreSilverName endp
+
+StoreSilverAge proc    
+    mov si, 0
+    mov cx, 2
+    mov di, silverAgeCount
+    
+    s2:
+    mov al, mbrAgeArray[si]
+    mov silverAgeArray[di], al
+    inc si
+    inc di
+    inc silverAgeCount
+    loop s2      
+    
+    mov al, ','
+    mov silverAgeArray[di], al
+    inc silverAgeCount     
+    print addMbrSuccessful
+    call Pause    
+    ret
+    StoreSilverAge endp
+
+StoreGoldId proc  
     mov si, mbrIdCount 
     mov al, 'G'
     mov mbrIdCharacterArray[si], al
@@ -294,193 +722,53 @@ ConfirmAddMember proc
     inc goldCount
     inc mbrIdCount
     add goldStringArrayCount, 2
-    call StoreGoldName  
+    call StoreGoldName
+    
     ret
-    ConfirmAddMember endp
-Member proc
-    call ClearScreen
-    print memberMenu
-    print mbrOpt    
-    mov ah, 01h
-    int 21h
-    cmp al, 31h
-    je RegisterMember    ; jump out of range
-    cmp al, 32h
-    je DisplayMember  
-    cmp al, 33h
-    je Exit
-    call MemberErrorMessage
-    DisplayMember:
-    call ClearScreen
-    print memberList    
-    call DisplayBronzeList
-    Exit:
-    mov ax, 4c00h
-    int 21h  
-    ret
-    Member endp           
-RegisterMember proc
-    call ClearScreen
-    print registerMbrMenu
-    print mbrOpt    
-    mov ah, 01h
-    int 21h
-    mov tempMbrType, al   ;<----- store either 1, 2 or 3 for member id auto generate according with the option selected
-    cmp al, 31h
-    je Bronze
-    cmp al, 32h
-    je Silver
-    cmp al, 33h
-    je Gold
-    cmp al, 34h
-    je Member          
-    call RegisterMemberErrorMessage  
-    ret
-    RegisterMember endp
-Bronze proc
-    call ClearScreen
-    print bronzeMenu    
-    cmp bronzeCount, 06h
-    je MemberFull    
-    call MemberName
-    ret
-    Bronze endp
-Silver proc
-    call ClearScreen
-    print silverMenu    
-    cmp silverCount, 06h
-    je MemberFull    
-    call MemberName
-    ret
-    Silver endp    
-Gold proc
-    call ClearScreen
-    print goldMenu    
-    cmp goldCount, 06h
-    je MemberFull    
-    call MemberName
-    MemberFull:
-    print mbrFull
-    call pause
-    call RegisterMember
-    ret
-    Gold endp
-NameErrorMessage proc
-    print nameErrorMsg
-    call Pause            
-    cmp tempMbrType, 31h
-    je Bronze
-    cmp tempMbrType, 32h
-    je Silver
-    cmp tempMbrType, 33h
-    je Gold 
-    ret
-    NameErrorMessage  endp
-MemberName proc
-    print newline
-    print enterMbrName    
-    mov ah, 0ah
-    lea dx, mbrName
-    int 21h    
-    cmp nameAct, 0
-    je EmptyNameErrorMessage
-    cmp nameAct, 1
-    je NameCheckX
-    cmp nameAct, 10
-    je MemberAge
-    call NameErrorMessage
-    EmptyNameErrorMessage:
-    print emptyNameErrorMsg
-    call Pause
-    call MemberName      
-    NameCheckX:
-    mov si, 0        
-    cmp mbrNameArray[si], 'x'
-    jne NameErrorMessage       
-    call RegisterMember
-    ret
-    MemberName endp                          
-MemberAge proc
-    print enterMbrAge    
-    mov ah, 0ah
-    lea dx, mbrAge
-    int 21h    
-    cmp ageAct, 0
-    je EmptyAgeErrorMessage
-    cmp ageAct, 1
-    je AgeCheckX
-    cmp ageAct, 2
-    je CheckAge   
-    call AgeErrorMessage
-    EmptyAgeErrorMessage:
-    print emptyAgeErrorMsg
-    call pause
-    call MemberAge
-    AgeCheckX:
-    mov si, 0
-    cmp mbrAgeArray[si], 'x'
-    jne AgeErrorMessage        
-    call RegisterMember
-    CheckAge:
-    mov si, 0
-    cmp mbrAgeArray[si], 30h
-    jle AgeErrorMessage
-    cmp mbrAgeArray[si], 31h
-    je Check8and9
-    cmp mbrAgeArray[si], 39h
-    jg AgeErrorMessage
+    StoreGoldId endp
+
+StoreGoldName proc    
+    mov si, 0      
+    mov cx, 10
+    mov di, goldNameCount  
+    
+    g1:
+    mov al, mbrNameArray[si]
+    mov goldNameArray[di], al
     inc si
-    cmp mbrAgeArray[si], 30h
-    jl AgeErrorMessage
-    cmp mbrAgeArray[si], 39h
-    jg AgeErrorMessage    
-    call FindMemberId
-    AgeErrorMessage:
-    print ageErrorMsg
-    call pause
-    call MemberAge
-    Check8and9:
-    mov di, 1
-    cmp mbrAgeArray[di], 38h
-    je FindMemberId
-    cmp mbrAgeArray[di], 39h
-    je FindMemberId    
-    jmp AgeErrorMessage
+    inc di
+    inc goldNameCount
+    loop g1        
+    
+    mov al, ','
+    mov goldNameArray[di], al
+    inc goldNameCount
+    call StoreGoldAge
+    
     ret
-    MemberAge endp
-FindMemberId proc        
-    cmp tempMbrType, 31h
-    je DisplayBronze
-    cmp tempMbrType, 32h
-    je DisplaySilver
-    cmp tempMbrType, 33h
-    je DisplayGold
-    DisplayBronze:
-    print displayMbrId
-    mov si, bronzeStringArrayCount    
-    mov ah, 09h
-    mov dx, bronzeStringArray[si]
-    int 21h
-    call Pause
-    call ConfirmAddMember
-    DisplaySilver: 
-    print displayMbrId
-    mov si, silverStringArrayCount    
-    mov ah, 09h
-    mov dx, silverStringArray[si]
-    int 21h
-    call Pause
-    call ConfirmAddMember
-    DisplayGold:
-    print displayMbrId
-    mov si, goldStringArrayCount    
-    mov ah, 09h
-    mov dx, goldStringArray[si]
-    int 21h
-    call Pause
-    call ConfirmAddMember
+    StoreGoldName endp
+
+StoreGoldAge proc    
+    mov si, 0
+    mov cx, 2
+    mov di, goldAgeCount 
+    
+    g2:
+    mov al, mbrAgeArray[si]
+    mov goldAgeArray[di], al
+    inc si
+    inc di
+    inc goldAgeCount
+    loop g2          
+    
+    mov al, ','
+    mov goldAgeArray[di], al
+    inc goldAgeCount    
+    print addMbrSuccessful
+    call Pause    
     ret
-    FindMemberId endp      
+    StoreGoldAge endp
+
 DisplayBronzeList proc 
     mov si, 0
     mov ax, bronzeStringArrayCount
@@ -491,7 +779,7 @@ DisplayBronzeList proc
     bl1:
     mov ax,bronzeIdLoop
     cmp ax, 1
-    je DisplaySilverList
+    je JmpToDisplaySilverList
     mov cx, ax     
     print beforeId
     mov dx, bronzeStringArray[si]
@@ -532,7 +820,9 @@ DisplayBronzeList proc
     mov cx, bronzeIdLoop
     loop bl1
     mov bronzeNameLoop, 0
-    mov bronzeAgeLoop, 0    
+    mov bronzeAgeLoop, 0
+    
+    JmpToDisplaySilverList:   
     call DisplaySilverList
     ret
     DisplayBronzeList endp  
@@ -546,7 +836,7 @@ DisplaySilverList proc
     sl1:
     mov ax,silverIdLoop
     cmp ax, 1
-    je DisplayGoldList
+    je JmpToDisplayGoldList
     mov cx, ax     
     print beforeId
     mov dx, silverStringArray[si]
@@ -587,7 +877,9 @@ DisplaySilverList proc
     mov cx, silverIdLoop
     loop sl1    
     mov silverNameLoop, 0
-    mov silverAgeLoop, 0     
+    mov silverAgeLoop, 0
+    
+    JmpToDisplayGoldList:     
     call DisplayGoldList
     ret
     DisplaySilverList endp 
@@ -643,156 +935,26 @@ DisplayGoldList proc
     loop gl1    
     mov goldNameLoop, 0
     mov goldAgeLoop, 0       
-    call PressAnyToContinue
+    
     EndList:
-    print memberListEnd
-    print newline
-    print continue
-    call Pause    
-    call Member 
+    call PressAnyToContinueMbr  
     ret
     DisplayGoldList endp
-PressAnyToContinue proc
+PressAnyToContinueMbr proc
     print memberListEnd
     print newline
     print continue
-    call Pause    
-    call Member 
+    call Pause     
     ret
-    PressAnyToContinue endp      
-AddMemberErrorMessage proc
-    print confirmationErrorMsg
-    call Pause    
-    call ConfirmAddMember
-    ret
-    AddMemberErrorMessage endp
-StoreBronzeName proc            
-    mov si, 0      
-    mov cx, 10
-    mov di, bronzeNameCount
-    b1:
-    mov al, mbrNameArray[si]
-    mov bronzeNameArray[di], al
-    inc si
-    inc di
-    inc bronzeNameCount
-    loop b1    
-    mov al, ','
-    mov bronzeNameArray[di], al
-    inc bronzeNameCount
-    call StoreBronzeAge
-    ret
-    StoreBronzeName endp
-StoreSilverName proc    
-    mov si, 0      
-    mov cx, 10
-    mov di, silverNameCount
-    s1:
-    mov al, mbrNameArray[si]
-    mov silverNameArray[di], al
-    inc si
-    inc di
-    inc silverNameCount
-    loop s1    
-    mov al, ','
-    mov silverNameArray[di], al
-    inc silverNameCount
-    call StoreSilverAge
-    ret
-    StoreSilverName endp
-StoreGoldName proc    
-    mov si, 0      
-    mov cx, 10
-    mov di, goldNameCount
-    g1:
-    mov al, mbrNameArray[si]
-    mov goldNameArray[di], al
-    inc si
-    inc di
-    inc goldNameCount
-    loop g1    
-    mov al, ','
-    mov goldNameArray[di], al
-    inc goldNameCount
-    call StoreGoldAge
-    ret
-    StoreGoldName endp
-StoreBronzeAge proc   
-    mov si, 0
-    mov cx, 2
-    mov di, bronzeAgeCount
-    b2:
-    mov al, mbrAgeArray[si]
-    mov bronzeAgeArray[di], al
-    inc si
-    inc di
-    inc bronzeAgeCount
-    loop b2    
-    mov al, ','
-    mov bronzeAgeArray[di], al
-    inc bronzeAgeCount    
-    print addMbrSuccessful
-    call Pause    
-    call Member
-    ret
-    StoreBronzeAge endp
-StoreSilverAge proc    
-    mov si, 0
-    mov cx, 2
-    mov di, silverAgeCount
-    s2:
-    mov al, mbrAgeArray[si]
-    mov silverAgeArray[di], al
-    inc si
-    inc di
-    inc silverAgeCount
-    loop s2    
-    mov al, ','
-    mov silverAgeArray[di], al
-    inc silverAgeCount     
-    print addMbrSuccessful
-    call Pause    
-    call Member
-    ret
-    StoreSilverAge endp
-StoreGoldAge proc    
-    mov si, 0
-    mov cx, 2
-    mov di, goldAgeCount
-    g2:
-    mov al, mbrAgeArray[si]
-    mov goldAgeArray[di], al
-    inc si
-    inc di
-    inc goldAgeCount
-    loop g2    
-    mov al, ','
-    mov goldAgeArray[di], al
-    inc goldAgeCount    
-    print addMbrSuccessful
-    call Pause    
-    call Member
-    ret
-    StoreGoldAge endp
-MemberErrorMessage proc
-    print mbrOptErrorMsg
-    call Pause 
-    call Member
-    ret
-    MemberErrorMessage endp
-RegisterMemberErrorMessage proc
-    print newline
-    print mbrOptErrorMsg
-    call Pause 
-    call RegisterMember
-    ret
-    RegisterMemberErrorMessage endp 
+    PressAnyToContinueMbr endp
+
 ClearScreen proc
     mov ah, 00
     mov al, 02
     int 10h
     ret
-    ClearScreen endp
+    ClearScreen endp 
+
 Pause proc
     push    cx
     push    ax
