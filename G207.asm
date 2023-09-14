@@ -164,7 +164,6 @@ id db "sportxpert$"
 pw db "password$"
 invalidMemberIdMsg db 10,13,"                        Invalid Member ID.$"
 memberProceedMsg db 10,13,"    Check membership (y) or Back for asking membership (n) > $"
-memberid_Arr db "B01,B02,S01,S03,S05,G02,G03,G04,B03,B15,B17,B18,B11,S11,S15,$"
 memberid_Arr2 db 50 dup ('$')
 hasMembershipMsg db 10,13,"            Do customer has a membership (y = yes , n = no): $"
 invalidCharMsg db 10,13,"            Please enter a valid character (y = yes , n = no).",'$'
@@ -1301,7 +1300,7 @@ mov di,0
 mov si,0
 mov cx,1
 sorting1:
-mov al,[memberid_Arr + si]
+mov al,[mbrIdCharacterArray + si]
 cmp al,'$'
 je endforsorting
 cmp al,[input_member_Arr]
@@ -1314,15 +1313,15 @@ sorting:
 mov [memberid_Arr2 + di], al
 inc si
 inc di
-mov al,[memberid_Arr + si]
+mov al,[mbrIdCharacterArray + si]
 mov [memberid_Arr2 + di], al
 inc si
 inc di
-mov al,[memberid_Arr + si]
+mov al,[mbrIdCharacterArray + si]
 mov [memberid_Arr2 + di], al
 inc si
 inc di
-mov al,[memberid_Arr + si]
+mov al,[mbrIdCharacterArray + si]
 mov [memberid_Arr2 + di], al
 inc si
 inc di
