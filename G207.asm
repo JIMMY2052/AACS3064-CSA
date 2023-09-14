@@ -3178,7 +3178,7 @@ ConfirmAddMember proc
     je EndConfirmAddMember
     cmp al, 'N'
     je EndConfirmAddMember   
-    call AddMemberErrorMessage
+    jmp AddMemberErrorMessage
     
     StoreMember:
     cmp tempMbrType, 31h
