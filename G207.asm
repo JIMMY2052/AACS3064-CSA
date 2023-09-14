@@ -3138,7 +3138,6 @@ FindMemberId proc
     mov ah, 09h
     mov dx, bronzeStringArray[si]
     int 21h
-    call Pause
     call ConfirmAddMember
     jmp EndFindMemberId
     
@@ -3148,7 +3147,6 @@ FindMemberId proc
     mov ah, 09h
     mov dx, silverStringArray[si]
     int 21h
-    call Pause
     call ConfirmAddMember
     jmp EndFindMemberId 
     
@@ -3158,7 +3156,6 @@ FindMemberId proc
     mov ah, 09h
     mov dx, goldStringArray[si]
     int 21h
-    call Pause
     call ConfirmAddMember
     jmp EndFindMemberId
     
