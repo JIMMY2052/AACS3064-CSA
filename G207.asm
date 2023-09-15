@@ -644,6 +644,12 @@ jge roundingUp
 jmp endingRoundUP
 roundingUp:
 inc RoundedNetTotalDecimal12
+mov ax,RoundedNetTotalDecimal12
+cmp ax,100
+jl endingRoundUP
+sub ax,100
+mov RoundedNetTotalDecimal12,ax
+inc RoundedNetTotal
 endingRoundUP:
 ret
 RoundUpFUNCTION endp
