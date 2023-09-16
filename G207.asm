@@ -441,6 +441,7 @@ mov ds,ax
 
 call videoMode
 call login
+
 backToMainMenu:
 call MainMenu
 cmp MainMenuOption,1
