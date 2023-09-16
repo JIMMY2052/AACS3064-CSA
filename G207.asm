@@ -2884,7 +2884,7 @@ Member proc
     je JmpToDisplayMember  
     cmp al, 33h
     je EndMember
-    call MemberErrorMessage
+    jmp MemberErrorMessage
     
     JmpToRegisterMember:
     call RegisterMember
