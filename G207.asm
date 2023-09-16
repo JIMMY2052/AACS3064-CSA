@@ -148,7 +148,7 @@ bronzeAgeLoop dw 0
 silverAgeLoop dw 0
 goldAgeLoop dw 0
 
-
+excedd65535Msg db 10,13,"                    Cannot exceed RM65535.99 !$"
 newline db 10,13,"$"
 false_login db 0
 countLetter dw 0
@@ -796,11 +796,22 @@ je addition
 multiplication:
 mov bx,10d
 mul bx
+jc exceed65535
 loop multiplication
 addition:
 add AmountPaid,ax
+jc exceed65535
+jmp continueMultiplyAmountPaid
+exceed65535:
+inc ErrorFound
+print excedd65535Msg
+print pressAnytoContinue
+call pause
+jmp endingStoringAmountPaid
+continueMultiplyAmountPaid:
 cmp AmountPaidCount,0
 jnz calculationAmountPaid
+endingStoringAmountPaid:
 ret
 storingAmountPaidWholeNum endp
 AmountGotDecimal proc
